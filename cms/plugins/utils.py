@@ -127,7 +127,7 @@ def downcast_plugins(queryset, placeholders=None, select_placeholder=False):
     return plugin_list
 
 
-def get_plugins_for_page(request, page, lang=None):
+def get_plugins_for_page(request, page, lang=None): # unused ?
     from cms.utils.plugins import get_placeholders
 
     if not page:

@@ -16,14 +16,14 @@ def get_page_from_plugin_or_404(cms_plugin):
     return get_object_or_404(Page, placeholders=cms_plugin.placeholder)
 
 
-def _extend_blocks(extend_node, blocks):
+def _extend_blocks(extend_node, blocks, context=None):
     """
     Extends the dictionary `blocks` with *new* blocks in the parent node (recursive)
     """
     # we don't support variable extensions
-    if is_variable_extend_node(extend_node):
-        return
-    parent = extend_node.get_parent(None)
+    # if is_variable_extend_node(extend_node):
+        # return
+    parent = extend_node.get_parent(context)
     # Search for new blocks
     for node in parent.nodelist.get_nodes_by_type(BlockNode):
         if not node.name in blocks:
@@ -38,42 +38,42 @@ def _extend_blocks(extend_node, blocks):
             block.super = node
         # search for further ExtendsNodes
     for node in parent.nodelist.get_nodes_by_type(ExtendsNode):
-        _extend_blocks(node, blocks)
+        _extend_blocks(node, blocks, context)
         break
 
 
-def _find_topmost_template(extend_node):
-    parent_template = extend_node.get_parent({})
+def _find_topmost_template(extend_node, context):
+    parent_template = extend_node.get_parent(context)
     for node in parent_template.nodelist.get_nodes_by_type(ExtendsNode):
         # Their can only be one extend block in a template, otherwise django raises an exception
-        return _find_topmost_template(node)
+        return _find_topmost_template(node, context)
         # No ExtendsNode
-    return extend_node.get_parent({})
+    return extend_node.get_parent(context)
 
 
-def _extend_nodelist(extend_node):
+def _extend_nodelist(extend_node, context=None):
     """
     Returns a list of placeholders found in the parent template(s) of this
     ExtendsNode
     """
     # we don't support variable extensions
-    if is_variable_extend_node(extend_node):
-        return []
+    # if is_variable_extend_node(extend_node):
+        # return []
         # This is a dictionary mapping all BlockNode instances found in the template that contains extend_node
     blocks = extend_node.blocks
-    _extend_blocks(extend_node, blocks)
+    _extend_blocks(extend_node, blocks, context)
     placeholders = []
 
     for block in blocks.values():
-        placeholders += _scan_placeholders(block.nodelist, block, blocks.keys())
+        placeholders += _scan_placeholders(block.nodelist, block, blocks.keys(), context=context)
 
     # Scan topmost template for placeholder outside of blocks
-    parent_template = _find_topmost_template(extend_node)
-    placeholders += _scan_placeholders(parent_template.nodelist, None, blocks.keys())
+    parent_template = _find_topmost_template(extend_node, context)
+    placeholders += _scan_placeholders(parent_template.nodelist, None, blocks.keys(), context=context)
     return placeholders
 
 
-def _scan_placeholders(nodelist, current_block=None, ignore_blocks=None):
+def _scan_placeholders(nodelist, current_block=None, ignore_blocks=None, context=None):
     placeholders = []
     if ignore_blocks is None:
         # List of BlockNode instances to ignore.
@@ -89,16 +89,16 @@ def _scan_placeholders(nodelist, current_block=None, ignore_blocks=None):
         elif isinstance(node, ConstantIncludeNode):
             # if there's an error in the to-be-included template, node.template becomes None
             if node.template:
-                placeholders += _scan_placeholders(node.template.nodelist, current_block)
+                placeholders += _scan_placeholders(node.template.nodelist, current_block, context=context)
         # handle {% extends ... %} tags
         elif isinstance(node, ExtendsNode):
-            placeholders += _extend_nodelist(node)
+            placeholders += _extend_nodelist(node, context)
         # in block nodes we have to scan for super blocks
         elif isinstance(node, VariableNode) and current_block:
             if node.filter_expression.token == 'block.super':
                 if not hasattr(current_block.super, 'nodelist'):
                     raise TemplateSyntaxError("Cannot render block.super for blocks without a parent.")
-                placeholders += _scan_placeholders(current_block.super.nodelist, current_block.super)
+                placeholders += _scan_placeholders(current_block.super.nodelist, current_block.super, context=context)
         # ignore nested blocks which are already handled
         elif isinstance(node, BlockNode) and node.name in ignore_blocks:
             continue
@@ -111,7 +111,7 @@ def _scan_placeholders(nodelist, current_block=None, ignore_blocks=None):
                     if isinstance(subnodelist, NodeList):
                         if isinstance(node, BlockNode):
                             current_block = node
-                        placeholders += _scan_placeholders(subnodelist, current_block, ignore_blocks)
+                        placeholders += _scan_placeholders(subnodelist, current_block, ignore_blocks, context=context)
         # else just scan the node for nodelist instance attributes
         else:
             for attr in dir(node):
@@ -119,13 +119,13 @@ def _scan_placeholders(nodelist, current_block=None, ignore_blocks=None):
                 if isinstance(obj, NodeList):
                     if isinstance(node, BlockNode):
                         current_block = node
-                    placeholders += _scan_placeholders(obj, current_block, ignore_blocks)
+                    placeholders += _scan_placeholders(obj, current_block, ignore_blocks, context=context)
     return placeholders
 
 
-def get_placeholders(template):
+def get_placeholders(template, context=None):
     compiled_template = get_template(template)
-    placeholders = _scan_placeholders(compiled_template.nodelist)
+    placeholders = _scan_placeholders(compiled_template.nodelist, context=context)
     clean_placeholders = []
     for placeholder in placeholders:
         if placeholder in clean_placeholders:

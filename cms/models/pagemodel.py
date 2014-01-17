@@ -1067,14 +1067,14 @@ class Page(with_metaclass(PageMetaClass, MPTTModel)):
 
         return obj
 
-    def rescan_placeholders(self):
+    def rescan_placeholders(self, context=None):
         """
         Rescan and if necessary create placeholders in the current template.
         """
         # inline import to prevent circular imports
         from cms.utils.plugins import get_placeholders
 
-        placeholders = get_placeholders(self.get_template())
+        placeholders = get_placeholders(self.get_template(), context)
         found = {}
         for placeholder in self.placeholders.all():
             if placeholder.slot in placeholders:
