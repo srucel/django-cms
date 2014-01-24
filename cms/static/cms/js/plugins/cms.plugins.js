@@ -180,7 +180,7 @@ $(document).ready(function () {
 
 			// adds longclick events
 			dragitem.bind('mousedown mouseup mousemove', function (e) {
-				if(e.type === 'mousedown') {
+				if(e.type === 'mousedown' && !$(e.target).hasClass('cms_submenu-dropdown')) {
 					// start countdown
 					timer = setTimeout(function () {
 						CMS.API.StructureBoard.setActive(that.options.plugin_id, false);
