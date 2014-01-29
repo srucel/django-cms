@@ -158,7 +158,7 @@ class ToolbarTests(ToolbarTestBase):
         with self.login_user_context(superuser):
             response = self.client.get('/en/?edit')
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, 'href="LinkPlugin">Add a link')
+        self.assertContains(response, 'href="LinkPlugin">')
         self.assertContains(response, '<div class="cms_submenu-item cms_submenu-item-title"><span>Different Grouper</span>')
 
     def test_show_toolbar_to_staff(self):
@@ -223,6 +223,7 @@ class ToolbarTests(ToolbarTestBase):
         user = self.get_staff()
         cms_page = create_page('test-en', 'nav_playground.html', 'en', published=True)
         create_title('de', 'test-de', cms_page)
+        cms_page.publish('de')
         en_request = self.get_page_request(cms_page, user, edit=True)
         en_toolbar = CMSToolbar(en_request)
         self.assertEqual(len(en_toolbar.get_left_items() + en_toolbar.get_right_items()), 6)
@@ -241,6 +242,12 @@ class ToolbarTests(ToolbarTestBase):
                 response = self.client.get('/en/?edit')
             self.assertEquals(response.status_code, 200)
             self.assertContains(response, 'PPPP')
+
+    def test_user_settings(self):
+        superuser = self.get_superuser()
+        with self.login_user_context(superuser):
+            response = self.client.get('/en/admin/cms/usersettings/')
+            self.assertEqual(response.status_code, 200)
 
 
 class EditModelTemplateTagTest(ToolbarTestBase):
@@ -784,7 +791,7 @@ class EditModelTemplateTagTest(ToolbarTestBase):
         title.page_title = 'Page Test'
         title.title = 'Main Test'
         title.save()
-        page.publish()
+        page.publish('en')
         page.reload()
         request = self.get_page_request(page, user, edit=True)
         response = details(request, '')
