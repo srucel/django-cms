@@ -1,5 +1,6 @@
-#!/bin/env python
-from __future__ import print_function
+#!/usr/bin/env python
+from __future__ import print_function, with_statement
+import contextlib
 import multiprocessing
 import pkgutil
 import pyclbr
@@ -11,24 +12,32 @@ import warnings
 from docopt import docopt
 from django import VERSION
 from django.utils import autoreload
+from django.utils.encoding import force_text
+from django.core.management import call_command
 
-from cms import __version__
+import cms
 from cms.test_utils.cli import configure
+from cms.test_utils.util import static_analysis
 from cms.test_utils.tmpdir import temp_dir
+from cms.utils.compat import DJANGO_1_6
 
 __doc__ = '''django CMS development helper script. 
 
 To use a different database, set the DATABASE_URL environment variable to a
-dj-database-url compatible value.
+dj-database-url compatible value.  The AUTH_USER_MODEL environment variable can be
+used to change the user model in the same manner as the --user option.
 
 Usage:
-    develop.py test [--parallel | --failfast] [--migrate] [<test-label>...]
-    develop.py timed test [test-label...]
-    develop.py isolated test [<test-label>...] [--parallel] [--migrate]
-    develop.py server [--port=<port>] [--bind=<bind>] [--migrate]
+    develop.py test [--parallel | --failfast] [--migrate] [--user=<user>] [<test-label>...] [--xvfb]
+    develop.py timed test [test-label...] [--xvfb]
+    develop.py isolated test [<test-label>...] [--parallel] [--migrate] [--xvfb]
+    develop.py server [--port=<port>] [--bind=<bind>] [--migrate] [--user=<user>]
     develop.py shell
     develop.py compilemessages
     develop.py makemessages
+    develop.py makemigrations
+    develop.py pyflakes
+    develop.py authors
 
 Options:
     -h --help                   Show this screen.
@@ -38,22 +47,31 @@ Options:
     --failfast                  Stop tests on first failure (only if not --parallel).
     --port=<port>               Port to listen on [default: 8000].
     --bind=<bind>               Interface to bind to [default: 127.0.0.1].
+    --user=<user>               Specify which user model to run tests with (if other than auth.User).
+    --xvfb                      Use a virtual X framebuffer for frontend testing, requires xvfbwrapper to be installed.
 '''
 
 
-def server(bind='127.0.0.1', port=8000, migrate=False):
+def server(bind='127.0.0.1', port=8000, migrate_cmd=False):
     if os.environ.get("RUN_MAIN") != "true":
-        from south.management.commands import syncdb, migrate
-        if migrate:
-            syncdb.Command().handle_noargs(interactive=False, verbosity=1, database='default')
-            migrate.Command().handle(interactive=False, verbosity=1)
+        from cms.utils.compat.dj import get_user_model
+        if DJANGO_1_6:
+            from south.management.commands import syncdb, migrate
+            if migrate_cmd:
+                syncdb.Command().handle_noargs(interactive=False, verbosity=1, database='default')
+                migrate.Command().handle(interactive=False, verbosity=1)
+            else:
+                syncdb.Command().handle_noargs(interactive=False, verbosity=1, database='default', migrate=False, migrate_all=True)
+                migrate.Command().handle(interactive=False, verbosity=1, fake=True)
         else:
-            syncdb.Command().handle_noargs(interactive=False, verbosity=1, database='default', migrate=False, migrate_all=True)
-            migrate.Command().handle(interactive=False, verbosity=1, fake=True)
-        from django.contrib.auth.models import User
+            call_command("migrate", database='default')
+        User = get_user_model()
         if not User.objects.filter(is_superuser=True).exists():
             usr = User()
-            usr.username = 'admin'
+
+            if(User.USERNAME_FIELD != 'email'):
+                setattr(usr, User.USERNAME_FIELD, 'admin')
+
             usr.email = 'admin@admin.com'
             usr.set_password('admin')
             usr.is_superuser = True
@@ -77,12 +95,14 @@ def server(bind='127.0.0.1', port=8000, migrate=False):
         'use_threading': True
     })
 
+
 def _split(itr, num):
     split = []
     size = int(len(itr) / num)
     for index in range(num):
         split.append(itr[size * index:size * (index + 1)])
     return split
+
 
 def _get_test_labels():
     test_labels = []
@@ -92,7 +112,9 @@ def _get_test_labels():
             for method, _ in cls.methods.items():
                 if method.startswith('test_'):
                     test_labels.append('cms.%s.%s' % (clsname, method))
+    test_labels = sorted(test_labels)
     return test_labels
+
 
 def _test_run_worker(test_labels, failfast=False, test_runner='django.test.simple.DjangoTestSuiteRunner'):
     warnings.filterwarnings(
@@ -107,8 +129,10 @@ def _test_run_worker(test_labels, failfast=False, test_runner='django.test.simpl
     failures = test_runner.run_tests(test_labels)
     return failures
 
+
 def _test_in_subprocess(test_labels):
     return subprocess.call(['python', 'develop.py', 'test'] + test_labels)
+
 
 def isolated(test_labels, parallel=False):
     test_labels = test_labels or _get_test_labels()
@@ -121,8 +145,10 @@ def isolated(test_labels, parallel=False):
     failures = [test_label for test_label, return_code in zip(test_labels, results) if return_code != 0]
     return failures
 
+
 def timed(test_labels):
     return _test_run_worker(test_labels, test_runner='cms.test_utils.runners.TimedTestRunner')
+
 
 def test(test_labels, parallel=False, failfast=False):
     test_labels = test_labels or _get_test_labels()
@@ -135,22 +161,65 @@ def test(test_labels, parallel=False, failfast=False):
     else:
         return _test_run_worker(test_labels, failfast)
 
+
 def compilemessages():
     from django.core.management import call_command
     os.chdir('cms')
     call_command('compilemessages', all=True)
 
+
 def makemessages():
     from django.core.management import call_command
     os.chdir('cms')
-    call_command('makemessages', locale='en')
+    call_command('makemessages', locale=('en',))
+
 
 def shell():
     from django.core.management import call_command
     call_command('shell')
 
-if __name__ == '__main__':
-    args = docopt(__doc__, version=__version__)
+
+def makemigrations():
+    from django.core.management import call_command
+    call_command('makemigrations', *['cms', 'menus'])
+    
+
+def generate_authors():
+    print("Generating AUTHORS")
+
+    # Get our list of authors
+    print("Collecting author names")
+    r = subprocess.Popen(["git", "log", "--use-mailmap", "--format=%aN"], stdout=subprocess.PIPE)
+    seen_authors = []
+    authors = []
+    with open('AUTHORS', 'r') as f:
+        for line in f.readlines():
+            if line.startswith("*"):
+                author = force_text(line).strip("* \n")
+                if author.lower() not in seen_authors:
+                    seen_authors.append(author.lower())
+                    authors.append(author)
+    for author in r.stdout.readlines():
+        author = force_text(author).strip()
+        if author.lower() not in seen_authors:
+            seen_authors.append(author.lower())
+            authors.append(author)
+
+    # Sort our list of Authors by their case insensitive name
+    authors = sorted(authors, key=lambda x: x.lower())
+
+    # Write our authors to the AUTHORS file
+    print(u"Authors (%s):\n\n\n* %s" % (len(authors), u"\n* ".join(authors)))
+
+
+def main():
+    args = docopt(__doc__, version=cms.__version__)
+
+    if args['pyflakes']:
+        return static_analysis.pyflakes()
+    
+    if args['authors']:
+        return generate_authors()
 
     # configure django
     warnings.filterwarnings(
@@ -165,37 +234,80 @@ if __name__ == '__main__':
     with temp_dir() as STATIC_ROOT:
         with temp_dir() as MEDIA_ROOT:
             use_tz = VERSION[:2] >= (1, 4)
-            configure(db_url=db_url,
-                ROOT_URLCONF='cms.test_utils.project.urls',
-                STATIC_ROOT=STATIC_ROOT,
-                MEDIA_ROOT=MEDIA_ROOT,
-                USE_TZ=use_tz,
-                SOUTH_TESTS_MIGRATE=migrate
-            )
+
+            configs = {
+                'db_url': db_url,
+                'ROOT_URLCONF': 'cms.test_utils.project.urls',
+                'STATIC_ROOT': STATIC_ROOT,
+                'MEDIA_ROOT': MEDIA_ROOT,
+                'USE_TZ': use_tz,
+                'SOUTH_TESTS_MIGRATE': migrate,
+            }
+
+            if args['test']:
+                configs['SESSION_ENGINE'] = "django.contrib.sessions.backends.cache"
+
+            # Command line option takes precedent over environment variable
+            auth_user_model = args['--user']
+
+            if not auth_user_model:
+                auth_user_model = os.environ.get("AUTH_USER_MODEL", None)
+
+            if auth_user_model:
+                if VERSION[:2] < (1, 5):
+                    print()
+                    print("Custom user models are not supported before Django 1.5")
+                    print()
+                else:
+                    configs['AUTH_USER_MODEL'] = auth_user_model
+
+            configure(**configs)
 
             # run
             if args['test']:
-                if args['isolated']:
-                    failures = isolated(args['<test-label>'], args['--parallel'])
-                    print()
-                    print("Failed tests")
-                    print("============")
-                    if failures:
-                        for failure in failures:
-                            print(" - %s" % failure)
-                    else:
-                        print(" None")
-                    num_failures = len(failures)
-                elif args['timed']:
-                    num_failures = timed(args['<test-label>'])
+                # make "Address already in use" errors less likely, see Django
+                # docs for more details on this env variable.
+                os.environ.setdefault(
+                    'DJANGO_LIVE_TEST_SERVER_ADDRESS',
+                    'localhost:8000-9000'
+                )
+                if args['--xvfb']:
+                    import xvfbwrapper
+                    context = xvfbwrapper.Xvfb(width=1280, height=720)
                 else:
-                    num_failures = test(args['<test-label>'], args['--parallel'], args['--failfast'])
-                sys.exit(num_failures)
+                    @contextlib.contextmanager
+                    def null_context():
+                        yield
+                    context = null_context()
+
+                with context:
+                    if args['isolated']:
+                        failures = isolated(args['<test-label>'], args['--parallel'])
+                        print()
+                        print("Failed tests")
+                        print("============")
+                        if failures:
+                            for failure in failures:
+                                print(" - %s" % failure)
+                        else:
+                            print(" None")
+                        num_failures = len(failures)
+                    elif args['timed']:
+                        num_failures = timed(args['<test-label>'])
+                    else:
+                        num_failures = test(args['<test-label>'], args['--parallel'], args['--failfast'])
+                    sys.exit(num_failures)
             elif args['server']:
-                server(args['--bind'], args['--port'], migrate)
+                server(args['--bind'], args['--port'], args.get('--migrate', True))
             elif args['shell']:
                 shell()
             elif args['compilemessages']:
                 compilemessages()
             elif args['makemessages']:
-                compilemessages()
+                makemessages()
+            elif args['makemigrations']:
+                makemigrations()
+
+
+if __name__ == '__main__':
+    main()

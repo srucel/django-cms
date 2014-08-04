@@ -5,13 +5,15 @@ from cms.utils import get_language_from_request
 from cms.utils.compat.type_checks import string_types
 from cms.utils.conf import get_cms_setting
 from cms.utils.django_load import iterload_objects
-from cms.utils.placeholder import get_placeholder_conf
-from cms.utils.i18n import get_fallback_languages
+from cms.utils.placeholder import get_placeholder_conf, restore_sekizai_context
 from django.template import Template, Context
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
+
 # these are always called before all other plugin context processors
+from sekizai.helpers import Watcher
+
 DEFAULT_PLUGIN_CONTEXT_PROCESSORS = (
     plugin_meta_context_processor,
 )
@@ -89,18 +91,18 @@ def render_placeholder(placeholder, context_to_copy, name_fallback="Placeholder"
     Renders plugins for a placeholder on the given page using shallow copies of the
     given context, and returns a string containing the rendered output.
     """
-    from cms.plugins.utils import get_plugins
+    if not placeholder:
+        return
+    from cms.utils.plugins import get_plugins
     context = context_to_copy
     context.push()
     request = context['request']
-    if not hasattr(request, 'placeholder'):
+    if not hasattr(request, 'placeholders'):
         request.placeholders = []
     request.placeholders.append(placeholder)
+    if hasattr(placeholder, 'content_cache'):
+        return mark_safe(placeholder.content_cache)
     page = placeholder.page if placeholder else None
-    if page:
-        template = page.template
-    else:
-        template = None
     # It's kind of duplicate of the similar call in `get_plugins`, but it's required
     # to have a valid language in this function for `get_fallback_languages` to work
     if lang:
@@ -108,6 +110,32 @@ def render_placeholder(placeholder, context_to_copy, name_fallback="Placeholder"
     else:
         lang = get_language_from_request(request)
         save_language = lang
+
+    # Prepend frontedit toolbar output if applicable
+    edit = False
+    toolbar = getattr(request, 'toolbar', None)
+
+    if getattr(toolbar, 'edit_mode', False):
+        edit = True
+    if edit:
+        from cms.middleware.toolbar import toolbar_plugin_processor
+
+        processors = (toolbar_plugin_processor,)
+    else:
+        processors = None
+    from django.core.cache import cache
+    if get_cms_setting('PLACEHOLDER_CACHE'):
+        cache_key = placeholder.get_cache_key(lang)
+        if not edit and placeholder and not hasattr(placeholder, 'cache_checked'):
+            cached_value = cache.get(cache_key)
+            if not cached_value is None:
+                restore_sekizai_context(context, cached_value['sekizai'])
+                return mark_safe(cached_value['content'])
+    if page:
+        template = page.template
+    else:
+        template = None
+
     plugins = [plugin for plugin in get_plugins(request, placeholder, template, lang=lang)]
 
     # Add extra context as defined in settings, but do not overwrite existing context variables,
@@ -119,32 +147,18 @@ def render_placeholder(placeholder, context_to_copy, name_fallback="Placeholder"
     if slot:
         extra_context = get_placeholder_conf("extra_context", slot, template, {})
     for key, value in extra_context.items():
-        if not key in context:
+        if key not in context:
             context[key] = value
 
     content = []
-
-    # Prepend frontedit toolbar output if applicable
-    edit = False
-    toolbar = getattr(request, 'toolbar', None)
-
-    if (getattr(toolbar, 'edit_mode', False) and
-        (not page or page.has_change_permission(request))):
-        edit = True
-    if edit:
-        from cms.middleware.toolbar import toolbar_plugin_processor
-
-        processors = (toolbar_plugin_processor,)
-    else:
-        processors = None
-
+    watcher = Watcher(context)
     content.extend(render_plugins(plugins, context, placeholder, processors))
     toolbar_content = ''
 
     if edit:
         if not hasattr(request.toolbar, 'placeholders'):
             request.toolbar.placeholders = {}
-        if not placeholder.pk in request.toolbar.placeholders:
+        if placeholder.pk not in request.toolbar.placeholders:
             request.toolbar.placeholders[placeholder.pk] = placeholder
     if edit:
         toolbar_content = mark_safe(render_placeholder_toolbar(placeholder, context, name_fallback, save_language))
@@ -159,6 +173,9 @@ def render_placeholder(placeholder, context_to_copy, name_fallback="Placeholder"
     context['placeholder'] = toolbar_content
     context['edit'] = edit
     result = render_to_string("cms/toolbar/content.html", context)
+    changes = watcher.get_changes()
+    if placeholder and not edit and placeholder.cache_placeholder and get_cms_setting('PLACEHOLDER_CACHE'):
+        cache.set(cache_key, {'content': result, 'sekizai': changes}, get_cms_setting('CACHE_DURATIONS')['content'])
     context.pop()
     return result
 
@@ -180,7 +197,7 @@ def render_placeholder_toolbar(placeholder, context, name_fallback, save_languag
         slot = None
     context.push()
 
-    ## to restrict child-only plugins from draggables..
+    # to restrict child-only plugins from draggables..
     context['allowed_plugins'] = [cls.__name__ for cls in plugin_pool.get_all_plugins(slot, page)]
     context['placeholder'] = placeholder
     context['language'] = save_language

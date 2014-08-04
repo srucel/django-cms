@@ -1,26 +1,31 @@
 from __future__ import with_statement
 import copy
-from cms.middleware.toolbar import ToolbarMiddleware
-from cms.toolbar.toolbar import CMSToolbar
-from django.test import RequestFactory, TestCase
 import os
-from cms.api import create_page, create_title, add_plugin
-from cms.models.pagemodel import Page, Placeholder
-from djangocms_text_ckeditor.cms_plugins import TextPlugin
-from cms.templatetags.cms_tags import _get_page_by_untyped_arg, _show_placeholder_for_page, _get_placeholder
-from cms.test_utils.fixtures.templatetags import TwoPagesFixture
-from cms.test_utils.testcases import SettingsOverrideTestCase
-from cms.test_utils.util.context_managers import SettingsOverride
-from cms.utils import get_cms_setting, get_site_id
-from cms.utils.plugins import get_placeholders
+
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest
 from django.template import RequestContext, Context
+from django.test import RequestFactory, TestCase
 from django.template.base import Template
 from django.utils.html import escape
-from django.contrib.auth.models import User, AnonymousUser
+from djangocms_text_ckeditor.cms_plugins import TextPlugin
+
+from cms.api import create_page, create_title, add_plugin
+from cms.middleware.toolbar import ToolbarMiddleware
+from cms.models.pagemodel import Page, Placeholder
+from cms.templatetags.cms_tags import (_get_page_by_untyped_arg,
+                                       _show_placeholder_for_page,
+                                       _get_placeholder)
+from cms.test_utils.fixtures.templatetags import TwoPagesFixture
+from cms.test_utils.testcases import SettingsOverrideTestCase, CMSTestCase
+from cms.test_utils.util.context_managers import SettingsOverride
+from cms.toolbar.toolbar import CMSToolbar
+from cms.utils import get_cms_setting, get_site_id
+from cms.utils.plugins import get_placeholders
+from cms.utils.compat.dj import get_user_model
 
 
 class TemplatetagTests(TestCase):
@@ -83,8 +88,7 @@ class TemplatetagDatabaseTests(TwoPagesFixture, SettingsOverrideTestCase):
         control = self._getfirst()
         request = self.get_request('/')
         request.GET = {"edit": ''}
-        user = User(username="admin", password="admin", is_superuser=True, is_staff=True, is_active=True)
-        user.save()
+        user = self._create_user("admin", True, True)
         request.current_page = control
         request.user = user
         middleware = ToolbarMiddleware()
@@ -143,6 +147,8 @@ class TemplatetagDatabaseTests(TwoPagesFixture, SettingsOverrideTestCase):
         Verify ``show_placeholder`` correctly handles being given an
         invalid identifier.
         """
+        User = get_user_model()
+
         with SettingsOverride(DEBUG=True):
             request = HttpRequest()
             request.REQUEST = {}
@@ -224,15 +230,18 @@ class TemplatetagDatabaseTests(TwoPagesFixture, SettingsOverrideTestCase):
             REQUEST = {'language': 'en'}
 
         placeholder = _get_placeholder(page, page, dict(request=FakeRequest()), 'col_right')
-        db_placeholder = page.placeholders.get(slot='col_right')
+        page.placeholders.get(slot='col_right')
         self.assertEqual(placeholder.slot, 'col_right')
 
-class NoFixtureDatabaseTemplateTagTests(TestCase):
+
+class NoFixtureDatabaseTemplateTagTests(CMSTestCase):
     def test_cached_show_placeholder_sekizai(self):
         from django.core.cache import cache
 
         cache.clear()
         from cms.test_utils import project
+
+        User = get_user_model()
 
         template_dir = os.path.join(os.path.dirname(project.__file__), 'templates', 'alt_plugin_templates',
                                     'show_placeholder')
@@ -275,14 +284,12 @@ class NoFixtureDatabaseTemplateTagTests(TestCase):
 
     def test_cached_show_placeholder_preview(self):
         from django.core.cache import cache
-
         cache.clear()
         page = create_page('Test', 'col_two.html', 'en', published=True)
         placeholder = page.placeholders.all()[0]
         add_plugin(placeholder, TextPlugin, 'en', body='<b>Test</b>')
         request = RequestFactory().get('/')
-        user = User(username="admin", password="admin", is_superuser=True, is_staff=True, is_active=True)
-        user.save()
+        user = self._create_user("admin", True, True)
         request.current_page = page.publisher_public
         request.user = user
         template = Template(
@@ -309,13 +316,45 @@ class NoFixtureDatabaseTemplateTagTests(TestCase):
         template = Template(
             "{% load cms_tags %}{% render_plugin plugin %}")
         request = RequestFactory().get('/')
-        user = User(username="admin", password="admin", is_superuser=True, is_staff=True, is_active=True)
-        user.save()
+        user = self._create_user("admin", True, True)
         request.user = user
         request.current_page = page
         request.session = {}
         request.toolbar = CMSToolbar(request)
-        context = RequestContext(request, {'plugin':plugin})
+        context = RequestContext(request, {'plugin': plugin})
         with self.assertNumQueries(0):
             output = template.render(context)
         self.assertIn('<b>Test</b>', output)
+
+    def test_render_placeholder_with_no_page(self):
+        page = create_page('Test', 'col_two.html', 'en', published=True)
+        template = Template(
+            "{% load cms_tags %}{% placeholder test or %}< --- empty --->{% endplaceholder %}")
+        request = RequestFactory().get('/asdadsaasd/')
+        user = self.get_superuser()
+        request.user = user
+        request.current_page = page
+        request.session = {}
+        request.toolbar = CMSToolbar(request)
+        request.toolbar.edit_mode = True
+        request.toolbar.is_staff = True
+        context = RequestContext(request)
+        with self.assertNumQueries(4):
+            template.render(context)
+
+    def test_render_placeholder_as_var(self):
+        page = create_page('Test', 'col_two.html', 'en', published=True)
+        template = Template(
+            "{% load cms_tags %}{% placeholder test or %}< --- empty --->{% endplaceholder %}")
+        request = RequestFactory().get('/asdadsaasd/')
+        user = self.get_superuser()
+        request.user = user
+        request.current_page = page
+        request.session = {}
+        request.toolbar = CMSToolbar(request)
+        request.toolbar.edit_mode = True
+        request.toolbar.is_staff = True
+        context = RequestContext(request)
+        with self.assertNumQueries(4):
+            template.render(context)
+

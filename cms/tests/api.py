@@ -1,20 +1,25 @@
 from __future__ import with_statement
 import sys
 
-from cms.api import _generate_valid_slug, create_page, _verify_plugin_type, assign_user_to_page
-from cms.apphook_pool import apphook_pool
-from cms.models.pagemodel import Page
-from cms.plugin_base import CMSPluginBase
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import FieldError
+from django.template import TemplateDoesNotExist
+from django.test.testcases import TestCase
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 from djangocms_text_ckeditor.models import Text
+from menus.menu_pool import menu_pool
+
+from cms.api import _generate_valid_slug, create_page, _verify_plugin_type, assign_user_to_page
+from cms.apphook_pool import apphook_pool
+from cms.constants import TEMPLATE_INHERITANCE_MAGIC
+from cms.models.pagemodel import Page
+from cms.plugin_base import CMSPluginBase
 from cms.test_utils.util.context_managers import SettingsOverride
 from cms.test_utils.util.menu_extender import TestMenu
 from cms.test_utils.util.mock import AttributeObject
 from cms.tests.apphooks import APP_MODULE, APP_NAME
-from django.contrib.auth.models import User, Permission
-from django.contrib.contenttypes.models import ContentType
-from django.test.testcases import TestCase
-from menus.menu_pool import menu_pool
+from cms.utils.compat.dj import get_user_model
 
 
 def _grant_page_permission(user, codename):
@@ -67,6 +72,14 @@ class PythonAPITests(TestCase):
     def test_invalid_apphook_type(self):
         self.assertRaises(TypeError, create_page, apphook=1,
                           **self._get_default_create_page_arguments())
+
+    def test_invalid_template(self):
+        kwargs = self._get_default_create_page_arguments()
+        kwargs['template'] = "not_valid.htm"
+        with SettingsOverride(CMS_TEMPLATES=(("not_valid.htm", "notvalid"),)):
+            self.assertRaises(TemplateDoesNotExist, create_page, **kwargs)
+            kwargs['template'] = TEMPLATE_INHERITANCE_MAGIC
+        create_page(**kwargs)
 
     def test_apphook_by_class(self):
         if APP_MODULE in sys.modules:
@@ -141,30 +154,35 @@ class PythonAPITests(TestCase):
 
     def test_assign_user_to_page_nothing(self):
         page = create_page(**self._get_default_create_page_arguments())
-        user = User.objects.create(username='user', email='user@django-cms.org',
-                                   is_staff=True, is_active=True)
+        user = get_user_model().objects.create_user(username='user', email='user@django-cms.org',
+                                                    password='user')
+        user.is_staff = True
         request = AttributeObject(user=user)
         self.assertFalse(page.has_change_permission(request))
 
     def test_assign_user_to_page_single(self):
         page = create_page(**self._get_default_create_page_arguments())
-        user = User.objects.create(username='user', email='user@django-cms.org',
-                                   is_staff=True, is_active=True)
+        user = get_user_model().objects.create_user(username='user', email='user@django-cms.org',
+                                                    password='user')
+        user.is_staff = True
+        user.save()
         request = AttributeObject(user=user)
         assign_user_to_page(page, user, can_change=True)
         self.assertFalse(page.has_change_permission(request))
         self.assertFalse(page.has_add_permission(request))
         _grant_page_permission(user, 'change')
         page = Page.objects.get(pk=page.pk)
-        user = User.objects.get(pk=user.pk)
+        user = get_user_model().objects.get(pk=user.pk)
         request = AttributeObject(user=user)
         self.assertTrue(page.has_change_permission(request))
         self.assertFalse(page.has_add_permission(request))
 
     def test_assign_user_to_page_all(self):
         page = create_page(**self._get_default_create_page_arguments())
-        user = User.objects.create(username='user', email='user@django-cms.org',
-                                   is_staff=True, is_active=True)
+        user = get_user_model().objects.create_user(username='user', email='user@django-cms.org',
+                                                    password='user')
+        user.is_staff = True
+        user.save()
         request = AttributeObject(user=user)
         assign_user_to_page(page, user, grant_all=True)
         self.assertFalse(page.has_change_permission(request))
@@ -172,14 +190,18 @@ class PythonAPITests(TestCase):
         _grant_page_permission(user, 'change')
         _grant_page_permission(user, 'add')
         page = Page.objects.get(pk=page.pk)
-        user = User.objects.get(pk=user.pk)
+        user = get_user_model().objects.get(pk=user.pk)
         request = AttributeObject(user=user)
         self.assertTrue(page.has_change_permission(request))
         self.assertTrue(page.has_add_permission(request))
 
     def test_page_overwrite_url_default(self):
-        home = create_page('home', 'nav_playground.html', 'en')
+        self.assertEqual(Page.objects.all().count(), 0)
+        home = create_page('home', 'nav_playground.html', 'en', published=True)
+        self.assertTrue(home.is_published('en', True))
+        self.assertTrue(home.is_home)
         page = create_page(**self._get_default_create_page_arguments())
+        self.assertFalse(page.is_home)
         self.assertFalse(page.get_title_obj_attribute('has_url_overwrite'))
         self.assertEqual(page.get_title_obj_attribute('path'), 'test')
 
@@ -189,3 +211,9 @@ class PythonAPITests(TestCase):
         page = create_page(**page_attrs)
         self.assertTrue(page.get_title_obj_attribute('has_url_overwrite'))
         self.assertEqual(page.get_title_obj_attribute('path'), 'test/home')
+
+    def test_create_reverse_id_collision(self):
+
+        create_page('home', 'nav_playground.html', 'en', published=True, reverse_id="foo")
+        self.assertRaises(FieldError, create_page, 'foo', 'nav_playground.html', 'en', published=True, reverse_id="foo")
+        self.assertTrue(Page.objects.count(), 2)

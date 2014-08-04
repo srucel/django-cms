@@ -6,6 +6,7 @@ from django.contrib.sites.models import Site
 
 
 class CMSToolbar(object):
+
     def __init__(self, request, toolbar, is_current_app, app_path):
         self.request = request
         self.toolbar = toolbar
@@ -18,4 +19,10 @@ class CMSToolbar(object):
             self.current_lang = None
 
     def populate(self):
-        raise NotImplemented('populate() is not implemented')
+        pass
+
+    def post_template_populate(self):
+        pass
+
+    def request_hook(self):
+        pass

@@ -1,40 +1,38 @@
 # -*- coding: utf-8 -*-
-from cms.exceptions import ToolbarAlreadyRegistered
+from cms.exceptions import ToolbarAlreadyRegistered, ToolbarNotRegistered
 from cms.utils.conf import get_cms_setting
 from cms.utils.django_load import load, iterload_objects
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.datastructures import SortedDict
 
 
 class ToolbarPool(object):
     def __init__(self):
-        self.toolbars = {}
-        self.reverse = {}
-        self.discovered = False
-        self.block_register = False
+        self.toolbars = SortedDict()
+        self._discovered = False
+        self.force_register = False
 
     def discover_toolbars(self):
-        if self.discovered:
+        if self._discovered:
             return
             #import all the modules
         toolbars = get_cms_setting('TOOLBARS')
         if toolbars:
-            self.block_register = True
             for cls in iterload_objects(toolbars):
-                self.block_register = False
+                self.force_register = True
                 self.register(cls)
-                self.block_register = True
-            self.block_register = False
+                self.force_register = False
         else:
             load('cms_toolbar')
-        self.discovered = True
+        self._discovered = True
 
     def clear(self):
-        self.apps = {}
-        self.discovered = False
+        self.toolbars = SortedDict()
+        self._discovered = False
 
     def register(self, toolbar):
-        if self.block_register:
-            return
+        if not self.force_register and get_cms_setting('TOOLBARS'):
+            return toolbar
         from cms.toolbar_base import CMSToolbar
         # validate the app
         if not issubclass(toolbar, CMSToolbar):
@@ -44,9 +42,24 @@ class ToolbarPool(object):
         if name in self.toolbars.keys():
             raise ToolbarAlreadyRegistered("[%s] a toolbar with this name is already registered" % name)
         self.toolbars[name] = toolbar
+        return toolbar
+
+    def unregister(self, toolbar):
+        name = '%s.%s' % (toolbar.__module__, toolbar.__name__)
+        if name not in self.toolbars:
+            raise ToolbarNotRegistered('The toolbar %s is not registered' % name)
+        del self.toolbars[name]
 
     def get_toolbars(self):
         self.discover_toolbars()
         return self.toolbars
+
+    def get_watch_models(self):
+        models = []
+        for toolbar in self.toolbars.values():
+            if hasattr(toolbar, 'watch_models'):
+                models += toolbar.watch_models
+        return models
+
 
 toolbar_pool = ToolbarPool()

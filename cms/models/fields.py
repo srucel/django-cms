@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from cms.forms.fields import PageSelectFormField, PlaceholderFormField
+from cms.forms.fields import PageSelectFormField
 from cms.models.pagemodel import Page
 from cms.models.placeholdermodel import Placeholder
 from cms.utils.placeholder import PlaceholderNoAction, validate_placeholder_name
 from django.db import models
-from django.utils.text import capfirst
 
 
 class PlaceholderField(models.ForeignKey):
@@ -17,9 +16,16 @@ class PlaceholderField(models.ForeignKey):
         self.slotname = slotname
         self.default_width = default_width
         self.actions = actions()
+        if 'to' in kwargs:
+            del(kwargs['to'])
         kwargs.update({'null': True})  # always allow Null
         kwargs.update({'editable': False}) # never allow edits in admin
         super(PlaceholderField, self).__init__(Placeholder, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(PlaceholderField, self).deconstruct()
+        kwargs['slotname'] = self.slotname
+        return name, path, args, kwargs
 
     def _get_new_placeholder(self, instance):
         return Placeholder.objects.create(slot=self._get_placeholder_slot(instance), default_width=self.default_width)

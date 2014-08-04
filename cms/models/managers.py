@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
+from django.contrib.sites.models import Site
+from django.db import models
+from django.db.models import Q
+
 from cms.cache.permissions import get_permission_cache, set_permission_cache
 from cms.exceptions import NoPermissionsException
 from cms.models.query import PageQuerySet
 from cms.publisher import PublisherManager
 from cms.utils import get_cms_setting
+from cms.utils.compat.dj import user_related_query_name
 from cms.utils.i18n import get_fallback_languages
-from django.contrib.sites.models import Site
-from django.db import models
-from django.db.models import Q
 
 
 class PageManager(PublisherManager):
@@ -60,7 +62,7 @@ class PageManager(PublisherManager):
         return self.get_query_set().valid_targets(page_id, request, perms, page)
 
     def published(self, site=None):
-        return self.get_query_set().published(site)
+        return self.get_query_set().published(site=site)
 
     def expired(self):
         return self.drafts().expired()
@@ -216,14 +218,18 @@ class TitleManager(PublisherManager):
 class BasicPagePermissionManager(models.Manager):
     """Global page permission manager accessible under objects.
 
-    !IMPORTANT: take care, PagePermissionManager extends this manager
+    !IMPORTANT: take care, PagePermissionManager and GlobalPagePermissionManager
+    both inherit from this manager
     """
 
     def with_user(self, user):
         """Get all objects for given user, also takes look if user is in some
         group.
         """
-        return self.filter(Q(user=user) | Q(group__user=user))
+        query = dict()
+        query['group__' + user_related_query_name] = user
+
+        return self.filter(Q(user=user) | Q(**query))
 
     def with_can_change_permissions(self, user):
         """Set of objects on which user haves can_change_permissions. !But only
@@ -233,6 +239,29 @@ class BasicPagePermissionManager(models.Manager):
         return self.with_user(user).filter(can_change_permissions=True)
 
 
+class GlobalPagePermissionManager(BasicPagePermissionManager):
+ 
+    def user_has_permission(self, user, site_id, perm):
+        """
+        Provide a single point of entry for deciding whether any given global
+        permission exists.
+        """
+        # if the user has add rights to this site explicitly
+        this_site = Q(**{perm: True, 'sites__in':[site_id]})
+        # if the user can add to all sites
+        all_sites = Q(**{perm: True, 'sites__isnull': True})
+        return self.with_user(user).filter(this_site | all_sites)
+ 
+    def user_has_add_permission(self, user, site_id):
+        return self.user_has_permission(user, site_id, 'can_add')
+ 
+    def user_has_change_permission(self, user, site_id):
+        return self.user_has_permission(user, site_id, 'can_change')
+ 
+    def user_has_view_permission(self, user, site_id):
+        return self.user_has_permission(user, site_id, 'can_view')
+ 
+  
 class PagePermissionManager(BasicPagePermissionManager):
     """Page permission manager accessible under objects.
     """
@@ -338,8 +367,8 @@ class PagePermissionManager(BasicPagePermissionManager):
         direct_parents = Q(
             page__tree_id=page.tree_id,
             page__level=page.level - 1) & (
-                Q(grant_on=ACCESS_CHILDREN) | Q(grant_on=ACCESS_PAGE_AND_CHILDREN)
-            )
+                             Q(grant_on=ACCESS_CHILDREN) | Q(grant_on=ACCESS_PAGE_AND_CHILDREN)
+                         )
         page_qs = Q(page=page) & (
             Q(grant_on=ACCESS_PAGE_AND_DESCENDANTS) | Q(grant_on=ACCESS_PAGE_AND_CHILDREN) | Q(grant_on=ACCESS_PAGE))
 
@@ -414,6 +443,35 @@ class PagePermissionsPermissionManager(models.Manager):
         """
         return self.__get_id_list(user, site, "can_view")
 
+    def get_restricted_id_list(self, site):
+        from cms.models import (GlobalPagePermission, PagePermission,
+            MASK_CHILDREN, MASK_DESCENDANTS, MASK_PAGE)
+
+        global_permissions = GlobalPagePermission.objects.all()
+        if global_permissions.filter(**{
+            'can_view': True, 'sites__in': [site]
+        }).exists():
+            # user or his group are allowed to do `attr` action
+            # !IMPORTANT: page permissions must not override global permissions
+            from cms.models import Page
+
+            return Page.objects.filter(site=site).values_list('id', flat=True)
+            # for standard users without global permissions, get all pages for him or
+        # his group/s
+        qs = PagePermission.objects.filter(page__site=site, can_view=True).select_related('page')
+        qs.order_by('page__tree_id', 'page__level', 'page__lft')
+        # default is denny...
+        page_id_allow_list = []
+        for permission in qs:
+            if permission.grant_on & MASK_PAGE:
+                page_id_allow_list.append(permission.page.id)
+            if permission.grant_on & MASK_CHILDREN:
+                page_id_allow_list.extend(permission.page.get_children().values_list('id', flat=True))
+            elif permission.grant_on & MASK_DESCENDANTS:
+                page_id_allow_list.extend(permission.page.get_descendants().values_list('id', flat=True))
+                # store value in cache
+        return page_id_allow_list
+
     def __get_id_list(self, user, site, attr):
         from cms.models import (GlobalPagePermission, PagePermission,
             MASK_PAGE, MASK_CHILDREN, MASK_DESCENDANTS)
@@ -430,17 +488,16 @@ class PagePermissionsPermissionManager(models.Manager):
         if cached is not None:
             return cached
             # check global permissions
-        global_permissions = GlobalPagePermission.objects.with_user(user)
-        if global_permissions.filter(**{
-            attr: True, 'sites__in': [site]
-        }).exists():
+        global_perm = GlobalPagePermission.objects.user_has_permission(user, site, attr).exists()
+        if global_perm:
             # user or his group are allowed to do `attr` action
             # !IMPORTANT: page permissions must not override global permissions
             return PagePermissionsPermissionManager.GRANT_ALL
             # for standard users without global permissions, get all pages for him or
         # his group/s
         qs = PagePermission.objects.with_user(user)
-        qs.order_by('page__tree_id', 'page__level', 'page__lft')
+        qs.filter(**{'page__site': site}).order_by('page__tree_id', 'page__level',
+                                                               'page__lft').select_related('page')
         # default is denny...
         page_id_allow_list = []
         for permission in qs:
@@ -455,10 +512,3 @@ class PagePermissionsPermissionManager(models.Manager):
                     # store value in cache
         set_permission_cache(user, attr, page_id_allow_list)
         return page_id_allow_list
-
-
-class PageModeratorStateManager(models.Manager):
-    def get_delete_actions(self):
-        from cms.models import PageModeratorState
-
-        return self.filter(action=PageModeratorState.ACTION_DELETE)

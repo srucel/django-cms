@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from functools import update_wrapper
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.admin import csrf_protect_m
 from django.contrib.admin import ModelAdmin
 
@@ -8,8 +8,8 @@ from django.contrib import admin
 
 from cms.models import UserSettings
 from django.core.urlresolvers import reverse
-from django.db import transaction
 import json
+from cms.utils.transaction import wrap_transaction
 
 
 class SettingsAdmin(ModelAdmin):
@@ -39,7 +39,7 @@ class SettingsAdmin(ModelAdmin):
         return urlpatterns
 
     @csrf_protect_m
-    @transaction.commit_on_success
+    @wrap_transaction
     def change_view(self, request, id=None):
         model = self.model
         try:

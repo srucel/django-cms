@@ -7,29 +7,33 @@ You must implement the necessary permission checks in your own code before
 calling these methods!
 """
 import datetime
-from cms.utils import copy_plugins
-from cms.utils.compat.type_checks import string_types
-from cms.utils.conf import get_cms_setting
-from django.core.exceptions import PermissionDenied, ValidationError
-from cms.utils.i18n import get_language_list
+from cms.constants import TEMPLATE_INHERITANCE_MAGIC
 
-from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.db.models import Max
+from django.core.exceptions import FieldError
+from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
-from menus.menu_pool import menu_pool
 
 from cms.admin.forms import save_permissions
 from cms.app_base import CMSApp
 from cms.apphook_pool import apphook_pool
 from cms.models.pagemodel import Page
-from cms.models.permissionmodels import PageUser, PagePermission, GlobalPagePermission, ACCESS_PAGE_AND_DESCENDANTS
+from cms.models.permissionmodels import PageUser, PagePermission, \
+    GlobalPagePermission, ACCESS_PAGE_AND_DESCENDANTS
 from cms.models.placeholdermodel import Placeholder
 from cms.models.pluginmodel import CMSPlugin
 from cms.models.titlemodels import Title
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
+from cms.utils import copy_plugins
+from cms.utils.compat.dj import get_user_model
+from cms.utils.compat.type_checks import string_types
+from cms.utils.conf import get_cms_setting
+from cms.utils.i18n import get_language_list
 from cms.utils.permissions import _thread_locals
+from django.template.loader import get_template
+from menus.menu_pool import menu_pool
 
 
 #===============================================================================
@@ -43,6 +47,7 @@ VISIBILITY_STAFF = 2
 #===============================================================================
 # Helpers/Internals
 #===============================================================================
+
 
 def _generate_valid_slug(source, parent, language):
     """
@@ -70,11 +75,18 @@ def _verify_apphook(apphook, namespace):
     """
     apphook_pool.discover_apps()
     if hasattr(apphook, '__module__') and issubclass(apphook, CMSApp):
-        assert apphook in apphook_pool.apps.values()
+        try:
+            assert apphook in apphook_pool.apps.values()
+        except AssertionError:
+            print(apphook_pool.apps.values())
+            raise
         return apphook.__name__
     elif isinstance(apphook, string_types):
-        apphook_pool.discover_apps()
-        assert apphook in apphook_pool.apps
+        try:
+            assert apphook in apphook_pool.apps
+        except AssertionError:
+            print(apphook_pool.apps.values())
+            raise
         apphook_name = apphook
     else:
         raise TypeError("apphook must be string or CMSApp instance")
@@ -90,6 +102,7 @@ def _verify_plugin_type(plugin_type):
     """
     if (hasattr(plugin_type, '__module__') and
         issubclass(plugin_type, CMSPluginBase)):
+        plugin_pool.set_plugin_meta()
         plugin_model = plugin_type.model
         assert plugin_type in plugin_pool.plugins.values()
         plugin_type = plugin_type.__name__
@@ -115,21 +128,24 @@ def create_page(title, template, language, menu_title=None, slug=None,
                 in_navigation=False, soft_root=False, reverse_id=None,
                 navigation_extenders=None, published=False, site=None,
                 login_required=False, limit_visibility_in_menu=VISIBILITY_ALL,
-                position="last-child", overwrite_url=None):
+                position="last-child", overwrite_url=None, xframe_options=Page.X_FRAME_OPTIONS_INHERIT):
     """
     Create a CMS Page and it's title for the given language
     
     See docs/extending_cms/api_reference.rst for more info
     """
     # ugly permissions hack
-    if created_by and isinstance(created_by, User):
+    if created_by and isinstance(created_by, get_user_model()):
         _thread_locals.user = created_by
-        created_by = created_by.username
+
+        created_by = getattr(created_by, get_user_model().USERNAME_FIELD)
     else:
         _thread_locals.user = None
 
     # validate template
-    assert template in [tpl[0] for tpl in get_cms_setting('TEMPLATES')]
+    if not template == TEMPLATE_INHERITANCE_MAGIC:
+        assert template in [tpl[0] for tpl in get_cms_setting('TEMPLATES')]
+        get_template(template)
 
     # validate site
     if not site:
@@ -174,6 +190,10 @@ def create_page(title, template, language, menu_title=None, slug=None,
     else:
         application_urls = None
 
+    if reverse_id:
+        if Page.objects.drafts().filter(reverse_id=reverse_id, site=site).count():
+            raise FieldError('A page with the reverse_id="%s" already exist.' % reverse_id)
+
     page = Page(
         created_by=created_by,
         changed_by=created_by,
@@ -190,6 +210,7 @@ def create_page(title, template, language, menu_title=None, slug=None,
         site=site,
         login_required=login_required,
         limit_visibility_in_menu=limit_visibility_in_menu,
+        xframe_options=xframe_options,    
     )
     page.insert_at(parent, position)
     page.save()
@@ -262,14 +283,27 @@ def add_plugin(placeholder, plugin_type, language, position='last-child',
 
     # validate and normalize plugin type
     plugin_model, plugin_type = _verify_plugin_type(plugin_type)
-
-    max_pos = CMSPlugin.objects.filter(language=language,
-                                       placeholder=placeholder).aggregate(Max('position'))['position__max'] or 0
+    if target:
+        if position == 'last-child':
+            new_pos = CMSPlugin.objects.filter(language=language, parent=target, tree_id=target.tree_id).count()
+        elif position == 'first-child':
+            new_pos = 0
+        elif position == 'left':
+            new_pos = target.position
+        elif position == 'right':
+            new_pos = target.position + 1
+        else:
+            raise Exception('position not supported: %s' % position)
+        for pl in CMSPlugin.objects.filter(language=language, parent=target.parent_id, tree_id=target.tree_id, position__gte=new_pos):
+            pl.position += 1
+            pl.save()
+    else:
+        new_pos = CMSPlugin.objects.filter(language=language, parent__isnull=True, placeholder=placeholder).count()
 
     plugin_base = CMSPlugin(
         plugin_type=plugin_type,
         placeholder=placeholder,
-        position=max_pos + 1,
+        position=new_pos,
         language=language
     )
     plugin_base.insert_at(target, position=position, save=False)
@@ -299,7 +333,7 @@ def create_page_user(created_by, user,
                                 True, True, True, True, True, True, True)
 
     # validate created_by
-    assert isinstance(created_by, User)
+    assert isinstance(created_by, get_user_model())
 
     data = {
         'can_add_page': can_add_page,
@@ -317,7 +351,7 @@ def create_page_user(created_by, user,
     user.is_staff = True
     user.is_active = True
     page_user = PageUser(created_by=created_by)
-    for field in [f.name for f in User._meta.local_fields]:
+    for field in [f.name for f in get_user_model()._meta.local_fields]:
         setattr(page_user, field, getattr(user, field))
     user.save()
     page_user.save()

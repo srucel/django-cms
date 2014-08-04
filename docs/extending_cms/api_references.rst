@@ -61,7 +61,7 @@ Functions and constants
     :func:`create_page`. Limits menu visibility to staff users.
 
 
-.. function:: create_page(title, template, language, menu_title=None, slug=None, apphook=None, apphook_namespace=None, redirect=None, meta_description=None, meta_keywords=None, created_by='python-api', parent=None, publication_date=None, publication_end_date=None, in_navigation=False, soft_root=False, reverse_id=None, navigation_extenders=None, published=False, site=None, login_required=False, limit_visibility_in_menu=VISIBILITY_ALL, position="last-child")
+.. function:: create_page(title, template, language, menu_title=None, slug=None, apphook=None, apphook_namespace=None, redirect=None, meta_description=None, created_by='python-api', parent=None, publication_date=None, publication_end_date=None, in_navigation=False, soft_root=False, reverse_id=None, navigation_extenders=None, published=False, site=None, login_required=False, limit_visibility_in_menu=VISIBILITY_ALL, position="last-child")
 
     Creates a :class:`cms.models.pagemodel.Page` instance and returns it. Also
     creates a :class:`cms.models.titlemodel.Title` instance for the specified
@@ -77,7 +77,6 @@ Functions and constants
     :param string apphook_namespace: Name of the apphook namespace
     :param string redirect: URL redirect
     :param string meta_description: Description of this page for SEO
-    :param string meta_keywords: Keywords for this page for SEO
     :param created_by: User that is creating this page
     :type created_by: string of :class:`django.contrib.auth.models.User` instance
     :param parent: Parent page of this page
@@ -98,7 +97,7 @@ Functions and constants
     :param string overwrite_url: Overwritten path for this page
 
 
-.. function:: create_title(language, title, page, menu_title=None, slug=None, redirect=None, meta_description=None, meta_keywords=None, parent=None)
+.. function:: create_title(language, title, page, menu_title=None, slug=None, redirect=None, meta_description=None, parent=None)
     
     Creates a :class:`cms.models.titlemodel.Title` instance and returns it.
 
@@ -110,7 +109,6 @@ Functions and constants
     :param string slug: Slug for the page, by default uses a slugified version of *title*
     :param string redirect: URL redirect
     :param string meta_description: Description of this page for SEO
-    :param string meta_keywords: Keywords for this page for SEO
     :param parent: Used for automated slug generation
     :type parent: :class:`cms.models.pagemodel.Page` instance
     :param string overwrite_url: Overwritten path for this page
@@ -158,7 +156,7 @@ Functions and constants
     :param bool grant_all: Grant all permissions to the user
     
 
-.. function:: publish_page(page, user)
+.. function:: publish_page(page, user, language)
 
     Publishes a page.
     
@@ -166,6 +164,7 @@ Functions and constants
     :type page: :class:`cms.models.pagemodel.Page` instance
     :param user: The user that performs this action
     :type user: :class:`django.contrib.auth.models.User` instance
+    :param string language: The target language to publish to
 
 .. function:: get_page_draft(page):
 
@@ -433,11 +432,6 @@ cms.toolbar.items
     ``extra_classes`` should be either ``None`` or a list of class names as
     strings.
 
-    .. attribute:: URL_CHANGE
-
-        Constant to be used with ``close_on_url`` to automatically close when
-        the URL of the frame changes.
-
     .. attribute:: REFRESH_PAGE
 
         Constant to be used with ``on_close`` to refresh the current page when
@@ -480,25 +474,24 @@ cms.toolbar.items
         Since positional insertion allows ``None``, it's safe to use the return
         value of this method as the position argument to insertion APIs.
 
-    .. method:: add_sideframe_item(name, url, active=False, disabled=False, extra_classes=None, close_on_url=None, on_close=None, side=LEFT, position=None)
+    .. method:: add_sideframe_item(name, url, active=False, disabled=False, extra_classes=None, on_close=None, side=LEFT, position=None)
 
         Adds an item which opens ``url`` in the side frame and returns it.
-
-        If ``close_on_url`` is set to :attr:`URL_CHANGE` the side frame will close
-        once the URL in the side frame changes. If it's set to a string, it will
-        close when the side frame URL is the same as the specified string.
 
         ``on_close`` can be set to ``None`` to do nothing when the side frame
         closes, :attr:`REFRESH_PAGE` to refresh the page when it
         closes or a URL to open once it closes.
 
-    .. method:: add_modal_item(name, url, active=False, disabled=False, extra_classes=None, close_on_url_change=False, on_close=None, side=LEFT, position=None)
+    .. method:: add_modal_item(name, url, active=False, disabled=False, extra_classes=None, on_close=REFRESH_PAGE, side=LEFT, position=None)
 
         The same as :meth:`add_sideframe_item`, but opens the ``url`` in a
         modal dialog instead of the side frame.
 
-        Note that the default values for ``close_on_url`` and
-        ``on_close`` differ from :meth:`add_sideframe_item`.
+        ``on_close`` can be set to ``None`` to do nothing when the side modal
+        closes, :attr:`REFRESH_PAGE` to refresh the page when it
+        closes or a URL to open once it closes.
+
+        Note: The default value for ``on_close`` is different in :meth:`add_sideframe_item` then in :meth:`add_modal_item`
 
     .. method:: add_link_item(name, url, active=False, disabled=False, extra_classes=None, side=LEFT, position=None)
 
@@ -567,7 +560,7 @@ cms.toolbar.items
     Simple link item.
 
 
-.. class:: SideframeItem(name, url, active=False, disabled=False, extra_classes=None, close_on_url=None, on_close=None, side=LEFT)
+.. class:: SideframeItem(name, url, active=False, disabled=False, extra_classes=None, on_close=None, side=LEFT)
 
     Item that opens ``url`` in side frame.
 
@@ -577,7 +570,7 @@ cms.toolbar.items
     An item which posts ``data`` to ``action``.
 
 
-.. class:: ModalItem(name, url, active=False, disabled=False, extra_classes=None, close_on_url=URL_CHANGE on_close=None, side=LEFT)
+.. class:: ModalItem(name, url, active=False, disabled=False, extra_classes=None, on_close=None, side=LEFT)
 
     Item that opens ``url`` in the modal.
 

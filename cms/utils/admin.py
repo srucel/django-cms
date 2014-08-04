@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 from distutils.version import LooseVersion
 import json
-from cms.constants import PUBLISHER_STATE_PENDING, PUBLISHER_STATE_DIRTY
 
 import django
+from django.contrib.sites.models import Site
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from django.contrib.sites.models import Site
-
-from cms.models import Page, Title
-from cms.utils import permissions, get_language_from_request, get_language_list, get_cms_setting
-from cms.utils.permissions import has_global_page_permission
 from django.utils.encoding import smart_str
+
+from cms.models import Page, GlobalPagePermission
+from cms.utils import get_language_from_request
+from cms.utils import get_language_list
+from cms.utils import get_cms_setting
+from cms.constants import PUBLISHER_STATE_PENDING, PUBLISHER_STATE_DIRTY
 
 NOT_FOUND_RESPONSE = "NotFound"
 DJANGO_1_4 = LooseVersion(django.get_version()) < LooseVersion('1.5')
+
 
 def jsonify_request(response):
     """ Turn any response in a 200 response to let jQuery code handle it nicely.
@@ -34,7 +36,7 @@ publisher_classes = {
 }
 
 
-def get_admin_menu_item_context(request, page, filtered=False):
+def get_admin_menu_item_context(request, page, filtered=False, language=None):
     """
     Used for rendering the page tree, inserts into context everything what
     we need for single item
@@ -62,10 +64,11 @@ def get_admin_menu_item_context(request, page, filtered=False):
     has_add_on_same_level_permission = False
     opts = Page._meta
     if get_cms_setting('PERMISSION'):
-        perms = has_global_page_permission(request, page.site_id, can_add=True)
-        if (request.user.has_perm(opts.app_label + '.' + opts.get_add_permission()) and perms):
+        global_add_perm = GlobalPagePermission.objects.user_has_add_permission(
+            request.user, page.site_id).exists()
+        if request.user.has_perm(opts.app_label + '.' + opts.get_add_permission()) and global_add_perm:
             has_add_on_same_level_permission = True
-
+    from cms.utils import permissions
     if not has_add_on_same_level_permission and page.parent_id:
         has_add_on_same_level_permission = permissions.has_generic_permission(page.parent_id, request.user, "add",
                                                                               page.site)
@@ -76,6 +79,7 @@ def get_admin_menu_item_context(request, page, filtered=False):
         'lang': lang,
         'filtered': filtered,
         'metadata': metadata,
+        'preview_language': language,
         'has_change_permission': page.has_change_permission(request),
         'has_publish_permission': page.has_publish_permission(request),
         'has_delete_permission': page.has_delete_permission(request),
@@ -87,7 +91,7 @@ def get_admin_menu_item_context(request, page, filtered=False):
     return context
 
 
-def render_admin_menu_item(request, page, template=None):
+def render_admin_menu_item(request, page, template=None, language=None):
     """
     Renders requested page item for the tree. This is used in case when item
     must be reloaded over ajax.
@@ -99,6 +103,7 @@ def render_admin_menu_item(request, page, template=None):
         return HttpResponse(NOT_FOUND_RESPONSE) # Not found - tree will remove item
 
     # languages
+    from cms.utils import permissions
     languages = get_language_list(page.site_id)
     context = RequestContext(request, {
         'has_add_permission': permissions.has_page_add_permission(request),
@@ -106,7 +111,7 @@ def render_admin_menu_item(request, page, template=None):
     })
 
     filtered = 'filtered' in request.REQUEST
-    context.update(get_admin_menu_item_context(request, page, filtered))
+    context.update(get_admin_menu_item_context(request, page, filtered, language))
     # add mimetype to help out IE
     if DJANGO_1_4:
         return render_to_response(template, context, mimetype="text/html; charset=utf-8")

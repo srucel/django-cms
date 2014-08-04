@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from cms.models import Page
-from cms.test_utils.util.context_managers import (UserLoginContext,
-    SettingsOverride)
+import json
+import sys
+import warnings
+
 from django.conf import settings
-from django.contrib.auth.models import User, AnonymousUser, Permission
+from django.contrib.auth.models import AnonymousUser, Permission
 from django.contrib.sites.models import Site
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template.context import Context
@@ -12,10 +14,12 @@ from django.test import testcases
 from django.test.client import RequestFactory
 from django.utils.translation import activate
 from menus.menu_pool import menu_pool
+
+from cms.models import Page
+from cms.test_utils.util.context_managers import (UserLoginContext,
+    SettingsOverride)
+from cms.utils.compat.dj import get_user_model
 from cms.utils.compat.urls import urljoin, unquote
-import sys
-import warnings
-import json
 from cms.utils.permissions import set_current_user
 
 
@@ -50,7 +54,7 @@ def _collectWarnings(observeWarning, f, *args, **kwargs):
     def showWarning(message, category, filename, lineno, file=None, line=None):
         assert isinstance(message, Warning)
         observeWarning(_Warning(
-                message.args[0], category, filename, lineno))
+            message.args[0], category, filename, lineno))
 
     # Disable the per-module cache for every module otherwise if the warning
     # which the caller is expecting us to collect was already emitted it won't
@@ -92,6 +96,7 @@ class BaseCMSTestCase(object):
     def _post_teardown(self):
         # Needed to clean the menu keys cache, see menu.menu_pool.clear()
         menu_pool.clear()
+        cache.clear()
         super(BaseCMSTestCase, self)._post_teardown()
         set_current_user(None)
 
@@ -109,9 +114,19 @@ class BaseCMSTestCase(object):
         Set `permissions` parameter to an iterable of permission codes to add
         custom permissios.
         """
-        user = User(username=username, email=username+'@django-cms.org',
-                    is_staff=is_staff, is_active=is_active, is_superuser=is_superuser)
-        user.set_password(username)
+        User = get_user_model()
+
+        fields = dict(email=username + '@django-cms.org',
+                      is_staff=is_staff, is_active=is_active, is_superuser=is_superuser
+        )
+
+        # Check for special case where email is used as username
+        if (get_user_model().USERNAME_FIELD != 'email'):
+            fields[get_user_model().USERNAME_FIELD] = username
+
+        user = User(**fields)
+
+        user.set_password(getattr(user, get_user_model().USERNAME_FIELD))
         user.save()
         if is_staff and not is_superuser and add_default_permissions:
             user.user_permissions.add(Permission.objects.get(codename='add_text'))
@@ -129,8 +144,15 @@ class BaseCMSTestCase(object):
 
     def get_superuser(self):
         try:
-            admin = User.objects.get(username="admin")
-        except User.DoesNotExist:
+            query = dict()
+
+            if get_user_model().USERNAME_FIELD != "email":
+                query[get_user_model().USERNAME_FIELD] = "admin"
+            else:
+                query[get_user_model().USERNAME_FIELD] = "admin@django-cms.org"
+
+            admin = get_user_model().objects.get(**query)
+        except get_user_model().DoesNotExist:
             admin = self._create_user("admin", is_staff=True, is_superuser=True)
         return admin
 
@@ -168,10 +190,10 @@ class BaseCMSTestCase(object):
         self.counter += 1
         return page_data
 
-    
+
     def get_new_page_data_dbfields(self, parent=None, site=None,
                                    language=None,
-                                   template='nav_playground.html',):
+                                   template='nav_playground.html', ):
         page_data = {
             'title': 'test page %d' % self.counter,
             'slug': 'test-page-%d' % self.counter,
@@ -182,8 +204,8 @@ class BaseCMSTestCase(object):
         }
         self.counter = self.counter + 1
         return page_data
-    
-    
+
+
     def get_pagedata_from_dbfields(self, page_data):
         """Converts data created by get_new_page_data_dbfields to data
         created from get_new_page_data so you can switch between test cases
@@ -198,7 +220,7 @@ class BaseCMSTestCase(object):
         page_data['pagepermission_set-2-INITIAL_FORMS'] = 0
         page_data['pagepermission_set-2-MAX_NUM_FORMS'] = 0
         return page_data
-    
+
 
     def print_page_structure(self, qs):
         """Just a helper to see the page struct.
@@ -206,7 +228,7 @@ class BaseCMSTestCase(object):
         for page in qs.order_by('tree_id', 'lft'):
             ident = "  " * page.level
             print(u"%s%s (%s), lft: %s, rght: %s, tree_id: %s" % (ident, page,
-                                    page.pk, page.lft, page.rght, page.tree_id))
+            page.pk, page.lft, page.rght, page.tree_id))
 
     def print_node_structure(self, nodes, *extra):
         def _rec(nodes, level=0):
@@ -216,6 +238,7 @@ class BaseCMSTestCase(object):
                 attrs = ', '.join(['%s: %r' % data for data in raw_attrs])
                 print(u"%s%s: %s" % (ident, node.title, attrs))
                 _rec(node.children, level + 1)
+
         _rec(nodes)
 
     def assertObjectExist(self, qs, **filter):
@@ -244,10 +267,10 @@ class BaseCMSTestCase(object):
         }
 
         response = self.client.post(URL_CMS_PAGE + "%d/copy-page/" % page.pk, data)
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         # Altered to reflect the new django-js jsonified response messages
         expected = {"status": 200, "content": "ok"}
-        self.assertEquals(json.loads(response.content.decode('utf8')), expected)
+        self.assertEqual(json.loads(response.content.decode('utf8')), expected)
 
         title = page.title_set.all()[0]
         copied_slug = get_available_slug(title)
@@ -331,18 +354,18 @@ class BaseCMSTestCase(object):
 
         # TODO: add check for siblings
         draft_siblings = list(page.get_siblings(True).filter(
-                publisher_is_draft=True
-            ).order_by('tree_id', 'parent', 'lft'))
+            publisher_is_draft=True
+        ).order_by('tree_id', 'parent', 'lft'))
         public_siblings = list(public_page.get_siblings(True).filter(
-                publisher_is_draft=False
-            ).order_by('tree_id', 'parent', 'lft'))
+            publisher_is_draft=False
+        ).order_by('tree_id', 'parent', 'lft'))
         skip = 0
         for i, sibling in enumerate(draft_siblings):
             if not sibling.publisher_public_id:
                 skip += 1
                 continue
             self.assertEqual(sibling.id,
-                public_siblings[i - skip].publisher_draft.id)
+                             public_siblings[i - skip].publisher_draft.id)
 
     def failUnlessWarns(self, category, message, f, *args, **kwargs):
         warningsShown = []
@@ -359,6 +382,7 @@ class BaseCMSTestCase(object):
         self.assertTrue(first.category is category)
 
         return result
+
     assertWarns = failUnlessWarns
 
 

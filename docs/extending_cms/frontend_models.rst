@@ -20,6 +20,15 @@ changeform.
     model attribute. This may be a security risk if used on fields which may
     hold non-trusted content. Be aware, and use the templatetags accordingly.
 
+
+.. warning::
+
+    This feature is only partially compatible with django-hvad: using
+    ``render_model`` with hvad-translated fields (say
+    {% render_model object 'translated_field' %} return error if the
+    hvad-enabled object does not exists in the current language.
+    As a workaround ``render_model_icon`` can be used instead.
+
 ************
 Templatetags
 ************
@@ -66,6 +75,42 @@ You can always customize the editable fields by providing the
     {% render_model request.current_page "title" "page_title,menu_title" %}
 
 
+**************
+Page menu edit
+**************
+
+By using the special keyword ``changelist`` as edit field the frontend
+editing will show the page tree; a common pattern for this is to enable
+changes in the menu by wrapping the menu templatetags:
+
+.. code-block:: html+django
+
+    {% render_model_block request.current_page "changelist" %}
+        <h3>Menu</h3>
+        <ul>
+            {% show_menu 1 100 0 1 "sidebar_submenu_root.html" %}
+        </ul>
+    {% endrender_model_block %}
+
+Will render to:
+
+.. code-block:: html+django
+
+    <div class="cms_plugin cms_plugin-cms-page-changelist-1">
+        <h3>Menu</h3>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/another">another</a></li>
+            [...]
+    </div>
+    
+.. warning:
+    
+    Be aware that depending on the layout of your menu templates, clickable
+    area of the menu may completely overlap with the active area of the
+    frontend editor thus preventing editing. In this case you may use
+    ``{% render_model_icon %}``.
+    The same conflict exists when menu template is managed by a plugin.
 
 ******************
 Django models edit
@@ -77,16 +122,16 @@ and the resulting forms.
 Complete changeform edit
 ========================
 
-You need to properly setup your admin class by adding the
-``FrontendEditableAdmin`` mixin to the parents of your admin class (see
+You need to properly setup your admin class by adding the ``FrontendEditableAdminMixin``
+mixin to the parents of your admin class (see
 :mod:`Django admin documentation <django.contrib.admin>` for further information)
 on Django admin::
 
-    from cms.admin.placeholderadmin import FrontendEditableAdmin
+    from cms.admin.placeholderadmin import FrontendEditableAdminMixin
     from django.contrib import admin
 
 
-    class MyModelAdmin(FrontendEditableAdmin, admin.ModelAdmin):
+    class MyModelAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
         ...
 
 Then setup the templates adding ``render_model`` templatetag::
@@ -111,11 +156,11 @@ Set up the admin
 You need to add to your model admin a tuple of fields editable from the frontend
 admin::
 
-    from cms.admin.placeholderadmin import FrontendEditableAdmin
+    from cms.admin.placeholderadmin import FrontendEditableAdminMixin
     from django.contrib import admin
 
 
-    class MyModelAdmin(FrontendEditableAdmin, admin.ModelAdmin):
+    class MyModelAdmin(FrontendEditableAdminMixin, admin.ModelAdmin):
         frontend_editable_fields = ("foo", "bar")
         ...
 
@@ -183,6 +228,25 @@ Example ``view_method``::
     {% block content %}
     <h1>{% render_model instance "some_attribute" "some_field,other_field" "" "" "some_method" %}</h1>
     {% endblock content %}
+
+
+Model changelist
+================
+
+By using the special keyword ``changelist`` as edit field the frontend
+editing will show the model changelist:
+
+.. code-block:: html+django
+
+    {% render_model instance "name" "changelist" %}
+
+Will render to:
+
+.. code-block:: html+django
+
+    <div class="cms_plugin cms_plugin-myapp-mymodel-changelist-1">
+        My Model Instance Name
+    </div>
 
 
 .. filters:

@@ -40,20 +40,14 @@ class ShowAdminMenu(InclusionTag):
             filtered = context['cl'].is_filtered()
         elif context.has_key('filtered'):
             filtered = context['filtered']
-
+        language = context['preview_language']
 
 
         # following function is newly used for getting the context per item (line)
         # if something more will be required, then get_admin_menu_item_context
         # function have to be updated. 
         # This is done because item can be reloaded after some action over ajax.
-        context.update(get_admin_menu_item_context(request, page, filtered))
-
-        # this here is just context specific for menu rendering - items itself does
-        # not use any of following variables
-        #context.update({
-        #    'no_children': no_children,
-        #})
+        context.update(get_admin_menu_item_context(request, page, filtered, language))
         return context
 
 
@@ -78,8 +72,10 @@ class TreePublishRow(Tag):
         else:
 
             if language in page.languages:
-                if page.publisher_public_id and page.publisher_public.get_publisher_state(
-                    language) == PUBLISHER_STATE_PENDING:
+                public_pending = page.publisher_public_id and page.publisher_public.get_publisher_state(
+                        language) == PUBLISHER_STATE_PENDING
+                if public_pending or page.get_publisher_state(
+                        language) == PUBLISHER_STATE_PENDING:
                     cls = "unpublishedparent"
                     text = _("unpublished parent")
                 else:
@@ -92,6 +88,17 @@ class TreePublishRow(Tag):
 
 
 register.tag(TreePublishRow)
+
+
+@register.filter
+def is_published(page, language):
+    if page.is_published(language) and page.publisher_public_id and page.publisher_public.is_published(language):
+        return True
+    else:
+        if language in page.languages and page.publisher_public_id and page.publisher_public.get_publisher_state(
+                language) == PUBLISHER_STATE_PENDING:
+            return True
+        return False
 
 
 class ShowLazyAdminMenu(InclusionTag):
@@ -110,19 +117,12 @@ class ShowLazyAdminMenu(InclusionTag):
         elif context.has_key('filtered'):
             filtered = context['filtered']
 
-
-
+        language = context['preview_language']
         # following function is newly used for getting the context per item (line)
         # if something more will be required, then get_admin_menu_item_context
         # function have to be updated. 
         # This is done because item can be reloaded after some action over ajax.
-        context.update(get_admin_menu_item_context(request, page, filtered))
-
-        # this here is just context specific for menu rendering - items itself does
-        # not use any of following variables
-        #context.update({
-        #    'no_children': no_children,
-        #})
+        context.update(get_admin_menu_item_context(request, page, filtered, language))
         return context
 
 
@@ -166,18 +166,19 @@ def boolean_icon(value):
 @register.filter
 def is_restricted(page, request):
     if get_cms_setting('PERMISSION'):
-        all_perms = list(get_any_page_view_permissions(request, page))
-        icon = boolean_icon(bool(all_perms))
+        if hasattr(page, 'permission_restricted'):
+            icon = boolean_icon(bool(page.permission_restricted))
+        else:
+            all_perms = list(get_any_page_view_permissions(request, page))
+            icon = boolean_icon(bool(all_perms))
         return mark_safe(
-            ugettext('<span title="Restrictions: %(title)s">%(icon)s</span>') % {
-                'title': u', '.join((perm.get_grant_on_display() for perm in all_perms)) or None,
+            ugettext('<span>%(icon)s</span>') % {
                 'icon': icon,
             })
     else:
         icon = boolean_icon(None)
         return mark_safe(
-            ugettext('<span title="Restrictions: %(title)s">%(icon)s</span>') % {
-                'title': None,
+            ugettext('<span>%(icon)s</span>') % {
                 'icon': icon,
             })
 

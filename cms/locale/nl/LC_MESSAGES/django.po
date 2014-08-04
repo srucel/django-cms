@@ -9,17 +9,22 @@
 # Chris Wesseling <chris.wesseling@xs4all.nl>, 2011
 # Jacques de Hooge <>, 2012
 # Jonas Obrist <me@ojii.ch>, 2011
+# kurdy <transifex.net@kurdyenviolien.nl>, 2013
 # leonderijke <leon@cmsworks.nl>, 2012
-# maartendraijer <maarten@madra.nl>, 2013
-# kurdyma <transifex.com@kurdyenviolien.nl>, 2013
+# leonderijke <leon@cmsworks.nl>, 2012
+# Maarten Draijer <maarten@madra.nl>, 2013
+# Maarten Draijer <maarten@madra.nl>, 2013
+# René Mulder <rene@ytec.nl>, 2014
+# Steven Vande Ryse <vande.ryse.steven@gmail.com>, 2012
+# kurdyma <transifex.com@kurdyenviolien.nl>, 2013-2014
 # kurdy <transifex.net@kurdyenviolien.nl>, 2013
 # Steven Vande Ryse <vande.ryse.steven@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: django-cms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-11 14:31+0100\n"
-"PO-Revision-Date: 2013-12-12 09:10+0000\n"
+"POT-Creation-Date: 2014-05-21 14:57+0200\n"
+"PO-Revision-Date: 2014-05-22 08:17+0000\n"
 "Last-Translator: Patrick Lauber <patrick.lauber@divio.ch>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/django-cms/language/nl/)\n"
 "MIME-Version: 1.0\n"
@@ -33,840 +38,913 @@ msgstr ""
 
 #: cms_plugins.py:9
 msgid "Placeholder"
-msgstr ""
+msgstr "Placeholder"
 
-#: cms_toolbar.py:71
-msgid "Content"
-msgstr "Inhoud"
-
-#: cms_toolbar.py:73
+#: cms_toolbar.py:85
 msgid "Structure"
 msgstr "Structuur"
 
-#: cms_toolbar.py:91
+#: cms_toolbar.py:87
+msgid "Content"
+msgstr "Inhoud"
+
+#: cms_toolbar.py:105
 msgid "Users"
 msgstr "Gebruikers"
 
-#: cms_toolbar.py:98
+#: cms_toolbar.py:113
 msgid "Sites"
 msgstr "Sites"
 
-#: cms_toolbar.py:99
+#: cms_toolbar.py:114
 msgid "Admin Sites"
 msgstr "Beheer sites"
 
-#: cms_toolbar.py:105
-msgid "Stacks"
-msgstr ""
-
-#: cms_toolbar.py:107
+#: cms_toolbar.py:120
 msgid "Administration"
 msgstr "Beheer"
 
-#: cms_toolbar.py:110
+#: cms_toolbar.py:123
 msgid "User settings"
-msgstr "Gebruikers instellingen"
+msgstr "Gebruikersinstellingen"
 
-#: cms_toolbar.py:113
+#: cms_toolbar.py:158 tests/toolbar.py:370 tests/toolbar.py:372
+#: tests/toolbar.py:388 tests/toolbar.py:417 tests/toolbar.py:419
+#, python-format
+msgid "Logout %s"
+msgstr ""
+
+#: cms_toolbar.py:160
 msgid "Logout"
 msgstr "Uitloggen"
 
-#: cms_toolbar.py:120 admin/forms.py:72 admin/forms.py:170
+#: cms_toolbar.py:177 admin/forms.py:63 admin/forms.py:173 admin/forms.py:215
 #: models/settingmodels.py:12
 msgid "Language"
 msgstr "Taal"
 
-#: cms_toolbar.py:168
+#: cms_toolbar.py:238
 msgid "Publish changes"
-msgstr ""
+msgstr "Publiceer veranderingen"
 
-#: cms_toolbar.py:170
+#: cms_toolbar.py:240
 msgid "Publish page now"
-msgstr ""
+msgstr "Publiceer de pagina nu"
 
-#: cms_toolbar.py:217
+#: cms_toolbar.py:274 cms_toolbar.py:383
+msgid "Page settings"
+msgstr "Pagina instellingen"
+
+#: cms_toolbar.py:311
 #, python-format
 msgid "Add %(language)s Translation"
 msgstr "Voeg %(language)s vertaling toe"
 
-#: cms_toolbar.py:231
+#: cms_toolbar.py:325
 #, python-format
 msgid "Delete %(language)s Translation"
 msgstr "Verwijder vertaling %(language)s "
 
-#: cms_toolbar.py:243
+#: cms_toolbar.py:334
 #, python-format
 msgid "Are you sure you want copy all plugins from %s?"
 msgstr "Weet je zeker dat je alle plugin van %s wilt kopiëren?"
 
-#: cms_toolbar.py:244
+#: cms_toolbar.py:335
 #, python-format
 msgid "Copy all plugins from %s"
 msgstr "Kopieer alle plugins van %s"
 
-#: cms_toolbar.py:251
+#: cms_toolbar.py:345
 msgid "Pages"
 msgstr "Pagina's"
 
-#: cms_toolbar.py:256 templates/admin/cms/page/permissions.html:5
+#: cms_toolbar.py:350 templates/admin/cms/page/permissions.html:6
 msgid "Page"
 msgstr "Pagina"
 
-#: cms_toolbar.py:257
+#: cms_toolbar.py:352
+msgid "Add Page"
+msgstr "Pagina toevoegen"
+
+#: cms_toolbar.py:354
+msgid "New Page"
+msgstr "Nieuwe pagina"
+
+#: cms_toolbar.py:362
+msgid "New Sub Page"
+msgstr "Nieuwe subpagina"
+
+#: cms_toolbar.py:370
+msgid "Duplicate this Page"
+msgstr "Deze pagina dupliceren"
+
+#: cms_toolbar.py:378
 msgid "Edit this Page"
 msgstr "Bewerk deze pagina"
 
-#: cms_toolbar.py:259
-msgid "Page settings"
-msgstr "Pagina instellingen"
-
-#: cms_toolbar.py:268
+#: cms_toolbar.py:387
 msgid "Templates"
 msgstr "Sjablonen"
 
-#: cms_toolbar.py:279
+#: cms_toolbar.py:403
 msgid "Advanced settings"
 msgstr "Geavanceerde instellingen"
 
-#: cms_toolbar.py:286
+#: cms_toolbar.py:409
 msgid "Permissions"
 msgstr "Rechten"
 
-#: cms_toolbar.py:292
+#: cms_toolbar.py:413 admin/pageadmin.py:330
+msgid "Publishing dates"
+msgstr "Publicatiedatums"
+
+#: cms_toolbar.py:418
 msgid "Hide in navigation"
 msgstr "Verberg in navigatie"
 
-#: cms_toolbar.py:294
+#: cms_toolbar.py:420
 msgid "Display in navigation"
 msgstr "Laat zien in navigatie"
 
-#: cms_toolbar.py:299
+#: cms_toolbar.py:426
 msgid "Unpublish page"
-msgstr "depublicatieverzoek"
+msgstr "Pagina depubliceren"
 
-#: cms_toolbar.py:301
+#: cms_toolbar.py:429
 msgid "Publish page"
-msgstr "publicatieverzoek"
+msgstr "Pagina publiceren"
 
-#: cms_toolbar.py:321
+#: cms_toolbar.py:451
 msgid "Delete page"
-msgstr "verwijderverzoek"
+msgstr "Pagina verwijderen"
 
-#: cms_toolbar.py:326 templates/admin/cms/page/history/revision_header.html:10
+#: cms_toolbar.py:455
+msgid "Save as Page Type"
+msgstr "Opslaan als paginatype"
+
+#: cms_toolbar.py:465 templates/admin/cms/page/history/revision_header.html:10
 msgid "History"
 msgstr "Geschiedenis"
 
-#: cms_toolbar.py:341
+#: cms_toolbar.py:480
 msgid "Undo"
 msgstr "Ongedaan maken"
 
-#: cms_toolbar.py:342
+#: cms_toolbar.py:481
 msgid "Redo"
-msgstr "Herhalen"
+msgstr "Opnieuw"
 
-#: cms_toolbar.py:345
+#: cms_toolbar.py:484
 msgid "Are you sure you want to revert to live?"
 msgstr "Weet je zeker dat je terug wilt draaien naar live?"
 
-#: cms_toolbar.py:346
+#: cms_toolbar.py:485
 msgid "Revert to live"
 msgstr "Terugdraaien naar live"
 
-#: cms_toolbar.py:348
+#: cms_toolbar.py:487
 msgid "View history"
 msgstr "Geschiedenis weergeven"
 
-#: plugin_base.py:77
+#: plugin_base.py:76
 msgid "Advanced options"
 msgstr "Geavanceerde opties"
 
-#: plugin_base.py:94
+#: plugin_base.py:93
 msgid "Generic"
-msgstr "Algemeen"
+msgstr "Generiek"
 
-#: plugin_base.py:259
-msgid "There are no further settings for this plugin. Please hit OK to save."
-msgstr ""
+#: plugin_base.py:263
+msgid "There are no further settings for this plugin. Please press save."
+msgstr "Er zijn geen verdere opties meer voor deze plugin. Klik op bewaren."
 
-#: admin/forms.py:59
+#: admin/forms.py:64 admin/forms.py:174 admin/forms.py:216
+msgid "The current language of the content fields."
+msgstr "De huidige taal van de inhoudsvelden."
+
+#: admin/forms.py:65
+msgid "Page type"
+msgstr "Paginatype"
+
+#: admin/forms.py:66
 msgid "Title"
 msgstr "Titel"
 
-#: admin/forms.py:60
+#: admin/forms.py:67
 msgid "The default title"
 msgstr "De standaard-titel"
 
-#: admin/forms.py:61
+#: admin/forms.py:68
 msgid "Slug"
 msgstr "Slug"
 
-#: admin/forms.py:62
+#: admin/forms.py:69
 msgid "The part of the title that is used in the URL"
 msgstr "Het gedeelte van de titel dat gebruikt wordt voor de URL"
 
-#: admin/forms.py:63
+#: admin/forms.py:70
 msgid "Menu Title"
 msgstr "Menu-titel"
 
-#: admin/forms.py:64
+#: admin/forms.py:71
 msgid "Overwrite what is displayed in the menu"
 msgstr "Overschrijf wat wordt weergegeven in het menu"
 
-#: admin/forms.py:65
+#: admin/forms.py:72
 msgid "Page Title"
 msgstr "Pagina-titel"
 
-#: admin/forms.py:66
+#: admin/forms.py:73
 msgid ""
 "Overwrites what is displayed at the top of your browser or in bookmarks"
 msgstr "Overschrijft wat wordt weergegeven in de titelbalk van de browser of in bladwijzers"
 
-#: admin/forms.py:70
+#: admin/forms.py:75
+msgid "Description meta tag"
+msgstr "Meta tag Omschrijving"
+
+#: admin/forms.py:77
 msgid "A description of the page used by search engines."
-msgstr "Een door komma's gescheiden lijst van trefwoorden die soms door zoekmachines wordt gebruikt."
+msgstr "Een omschrijving van de pagina die door zoekmachines wordt gebruikt."
 
-#: admin/forms.py:73 admin/forms.py:171
-msgid "The current language of the content fields."
-msgstr "De huidige taal van de inhoudsvelden."
-
-#: admin/forms.py:117
+#: admin/forms.py:134
 msgid "Another page with this slug already exists"
 msgstr "Er bestaat al een pagina met dezelfde slug"
 
 #: admin/forms.py:162
+msgid "Slug must not be empty."
+msgstr "Slug mag niet leeg zijn."
+
+#: admin/forms.py:196
 msgid "Application"
 msgstr "Applicatie"
 
-#: admin/forms.py:164
+#: admin/forms.py:198
 msgid "Hook application to this page."
 msgstr "Koppel een applicatie aan deze pagina."
 
-#: admin/forms.py:165
+#: admin/forms.py:199
 msgid "Overwrite URL"
 msgstr "Overschrijf URL"
 
-#: admin/forms.py:166
+#: admin/forms.py:200
 msgid "Keep this field empty if standard path should be used."
 msgstr "Laat dit veld leeg als het standaard-pad gebruikt moet worden."
 
-#: admin/forms.py:168
+#: admin/forms.py:204
+msgid "X Frame Options"
+msgstr "X Frame Opties"
+
+#: admin/forms.py:205
+msgid "Whether this page can be embedded in other pages or websites"
+msgstr "Of deze pagina ingevoegd kan worden in andere pagina's of websites"
+
+#: admin/forms.py:210
 msgid "Redirect"
 msgstr "Doorsturen"
 
-#: admin/forms.py:169
+#: admin/forms.py:211
 msgid "Redirects to this URL."
 msgstr "Stuurt door naar deze URL."
 
-#: admin/forms.py:198
+#: admin/forms.py:211
+msgid "Start typing..."
+msgstr "Begin met typen..."
+
+#: admin/forms.py:268
 msgid "A page with this reverse URL id exists already."
 msgstr "Er bestaat al een pagina met dit omgekeerde URL kenmerk."
 
-#: admin/forms.py:205
-msgid "You selected an apphook with an \"app_name\". You must enter a namespace."
-msgstr "Je hebt een apphook met een \"app_name\" geselecteerd. Je moet een namespace invoeren."
+#: admin/forms.py:286
+msgid ""
+"You selected an apphook with an \"app_name\".\n"
+"                            You must enter a unique instance name."
+msgstr "U hebt een apphook met een \"app_name\" geselecteerd. U moet een unieke instantie naam opgeven."
 
-#: admin/forms.py:208
-msgid "If you enter a namespace you need an application url as well."
-msgstr "Als je een namespace opgeeft, heb je ook een applicatie url nodig."
+#: admin/forms.py:306
+msgid "A instance name with this name already exists."
+msgstr "Een instance naam met deze naam bestaat al."
 
-#: admin/forms.py:238 models/permissionmodels.py:40
+#: admin/forms.py:346 models/permissionmodels.py:60
 msgid "user"
 msgstr "gebruiker"
 
-#: admin/forms.py:302
+#: admin/forms.py:410
 msgid ""
 "Add page permission requires also access to children, or descendants, "
 "otherwise added page can't be changed by its creator."
 msgstr "Om het recht te hebben pagina's toe te voegen, is ook toegang nodig tot de kinderen (of afstammelingen), anders kan de toegevoegde pagina niet door zijn maker worden aangepast."
 
-#: admin/forms.py:307
+#: admin/forms.py:415
 msgid "Add page permission also requires edit page permission."
 msgstr "Voor het recht om pagina's toe te voegen is ook het recht nodig pagina's te bewerken."
 
-#: admin/forms.py:334
+#: admin/forms.py:442
 msgid "can_view"
 msgstr "kan_bekijken"
 
-#: admin/forms.py:345
+#: admin/forms.py:453
 msgid "Please select user or group first."
 msgstr "Selecteer eerst een gebruiker of groep."
 
-#: admin/forms.py:352 admin/forms.py:359 admin/forms.py:363
+#: admin/forms.py:460 admin/forms.py:467 admin/forms.py:471
 #: templates/admin/cms/usersettings/change_form.html:8
+#: templatetags/cms_tags.py:709
 msgid "Add"
 msgstr "Toevoegen"
 
-#: admin/forms.py:353 admin/forms.py:360 admin/forms.py:364
+#: admin/forms.py:461 admin/forms.py:468 admin/forms.py:472
 #: templates/cms/toolbar/toolbar.html:36
 #: templates/cms/toolbar/items/live_draft.html:7
 msgid "Change"
 msgstr "Aanpassen"
 
-#: admin/forms.py:354 admin/forms.py:361 admin/forms.py:365
+#: admin/forms.py:462 admin/forms.py:469 admin/forms.py:473
+#: templates/admin/cms/extensions/change_form.html:8
 #: templates/admin/cms/page/submit_row.html:8
 #: templates/admin/cms/page/plugin/delete_confirmation.html:9
-#: templates/admin/cms/page/tree/menu_item.html:52
-#: templates/cms/toolbar/dragitem_item.html:15
+#: templates/admin/cms/page/tree/menu_item.html:66
+#: templates/cms/toolbar/dragitem.html:15
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: admin/forms.py:355
+#: admin/forms.py:463
 msgid "Recover (any) pages"
 msgstr "Pagina's herstellen"
 
-#: admin/forms.py:383
+#: admin/forms.py:491
 msgid "Notify user"
 msgstr "Licht gebruiker in"
 
-#: admin/forms.py:385
+#: admin/forms.py:493
 msgid ""
 "Send email notification to user about username or password change. Requires "
 "user email."
 msgstr "Stuur een e-mailnotificatie naar de gebruiker over het aanpassen van de gebruikersnaam of het wachtwoord. Hiervoor is het e-mailadres van de gebruiker nodig."
 
-#: admin/forms.py:405
+#: admin/forms.py:513
 msgid "New password"
 msgstr "Nieuw wachtwoord"
 
-#: admin/forms.py:407
+#: admin/forms.py:515
 msgid "New password confirmation"
 msgstr "Nieuw wachtwoord bevestigen"
 
-#: admin/forms.py:426
+#: admin/forms.py:540
 msgid "Email notification requires valid email address."
 msgstr "Voor e-mailnotificatie is een geldig e-mailadres vereist."
 
-#: admin/forms.py:428
+#: admin/forms.py:542
 msgid ""
 "The permission to add new pages requires the permission to change pages!"
 msgstr "Het recht om pagina's toe te voegen vereist het recht pagina's aan te passen!"
 
-#: admin/forms.py:430
+#: admin/forms.py:544
 msgid ""
 "The permission to add new users requires the permission to change users!"
 msgstr "Het recht om gebruikers toe te voegen vereist het recht om gebruikers aan te passen!"
 
-#: admin/forms.py:432
+#: admin/forms.py:546
 msgid "To add permissions you also need to edit them!"
 msgstr "Om rechten toe te voegen moet je ze ook bewerken!"
 
-#: admin/pageadmin.py:269 templates/admin/cms/page/submit_row.html:10
+#: admin/pageadmin.py:327 templates/admin/cms/page/submit_row.html:10
 msgid "Advanced Settings"
 msgstr "Geavanceerde instellingen"
 
-#: admin/pageadmin.py:275
+#: admin/pageadmin.py:336
 msgid "Change Permissions"
 msgstr "Rechten aanpassen"
 
-#: admin/pageadmin.py:518
+#: admin/pageadmin.py:384
+msgid "Add Page Type"
+msgstr "Paginatype toevoegen"
+
+#: admin/pageadmin.py:388
+msgid "Add Page Copy"
+msgstr "Kopie van pagina toevoegen"
+
+#: admin/pageadmin.py:594
 #, python-format
 msgid "%(plugin_name)s plugin added to %(placeholder)s"
 msgstr "%(plugin_name)s-plugin toegevoegd aan %(placeholder)s"
 
-#: admin/pageadmin.py:525
+#: admin/pageadmin.py:602
 #, python-format
 msgid "Copied plugins to %(placeholder)s"
 msgstr "Plugins gekopieerd naar %(placeholder)s"
 
-#: admin/pageadmin.py:537
+#: admin/pageadmin.py:613
 #, python-format
 msgid ""
 "%(plugin_name)s plugin edited at position %(position)s in %(placeholder)s"
 msgstr "%(plugin_name)s-plugin bewerkt op positie %(position)s in %(placeholder)s"
 
-#: admin/pageadmin.py:548
+#: admin/pageadmin.py:625
 msgid "Plugins were moved"
 msgstr "Plugins zijn verplaatst"
 
-#: admin/pageadmin.py:555
+#: admin/pageadmin.py:632
 #, python-format
 msgid ""
 "%(plugin_name)s plugin at position %(position)s in %(placeholder)s was "
 "deleted."
 msgstr "%(plugin_name)s-plugin op positie %(position)s in %(placeholder)s is verwijderd."
 
-#: admin/pageadmin.py:568
+#: admin/pageadmin.py:645
 #, python-format
 msgid "All plugins in the placeholder \"%(name)s\" were deleted."
 msgstr "Alle plugins in de placeholder \"%(name)s\" zijn verwijderd."
 
-#: admin/pageadmin.py:587
+#: admin/pageadmin.py:664
 msgid "You do not have permission to change pages."
 msgstr "U heeft geen toestemming deze pagina te veranderen"
 
-#: admin/pageadmin.py:599
+#: admin/pageadmin.py:676
 msgid "Database error"
 msgstr "Databasefout"
 
-#: admin/pageadmin.py:695 admin/pageadmin.py:736 admin/pageadmin.py:991
-#: admin/pageadmin.py:1027
+#: admin/pageadmin.py:779 admin/pageadmin.py:846 admin/pageadmin.py:1178
+#: admin/pageadmin.py:1213
 msgid "You do not have permission to change this page"
 msgstr "Je bent niet toegestaan deze pagina de bewerken"
 
-#: admin/pageadmin.py:771
+#: admin/pageadmin.py:830 admin/pageadmin.py:896
+msgid "Page reverted but slug stays the same because of url collisions."
+msgstr "De pagina is teruggedraaid maar de slug blijft hetzelfde vanwege url-botsingen"
+
+#: admin/pageadmin.py:904
 msgid "You do not have permission to change the template"
 msgstr "U heeft geen toestemming dit template te veranderen"
 
-#: admin/pageadmin.py:775
+#: admin/pageadmin.py:908
 msgid "Template not valid"
 msgstr "Template ongeldig"
 
-#: admin/pageadmin.py:780
+#: admin/pageadmin.py:913
 #, python-format
 msgid "Template changed to %s"
 msgstr "Template aangepast naar %s"
 
-#: admin/pageadmin.py:782
+#: admin/pageadmin.py:916
 msgid "The template was successfully changed"
 msgstr "Het template was succesvol veranderd"
 
-#: admin/pageadmin.py:804
+#: admin/pageadmin.py:938
 msgid ""
 "Error! You don't have permissions to move this page. Please reload the page"
 msgstr "Fout! Je hebt geen rechten om deze pagina te verplaatsen. Vernieuw de pagina en probeer opnieuw"
 
-#: admin/pageadmin.py:808
+#: admin/pageadmin.py:943
 msgid "Page moved"
 msgstr "Pagina verplaatst"
 
-#: admin/pageadmin.py:854 admin/placeholderadmin.py:257
-#: admin/placeholderadmin.py:303
+#: admin/pageadmin.py:989 admin/placeholderadmin.py:253
+#: admin/placeholderadmin.py:299
 msgid "Language must be set to a supported language!"
 msgstr "De taal moet worden ingesteld op een ondersteunde taal!"
 
-#: admin/pageadmin.py:859 admin/placeholderadmin.py:322
+#: admin/pageadmin.py:994 admin/placeholderadmin.py:318
 msgid "You do not have permission to copy these plugins."
 msgstr "U heeft geen toestemming om deze plugins te kopiëren."
 
-#: admin/pageadmin.py:862
+#: admin/pageadmin.py:997
 #, python-format
 msgid "Copied plugins from %(source_language)s to %(target_language)s"
 msgstr "Kopieer plugins van %(source_language)s naar %(target_language)s"
 
-#: admin/pageadmin.py:924 admin/pageadmin.py:1129
+#: admin/pageadmin.py:1048
 msgid "You do not have permission to publish this page"
 msgstr "Je hebt geen toestemming deze pagina te publiceren"
 
-#: admin/pageadmin.py:939
+#: admin/pageadmin.py:1065 admin/pageadmin.py:1077
+msgid "Page not published! A parent page is not published yet."
+msgstr "Pagina niet gepubliceerd! Een bovenliggende pagina is nog niet gepubliceerd."
+
+#: admin/pageadmin.py:1067
 msgid "The content was successfully published."
-msgstr ""
+msgstr "De inhoud is succesvol gepubliceerd."
 
-#: admin/pageadmin.py:941
+#: admin/pageadmin.py:1079
 msgid "There was a problem publishing your content"
-msgstr ""
+msgstr "Er is een probleem bij het publiceren van je inhoud."
 
-#: admin/pageadmin.py:995
+#: admin/pageadmin.py:1146
+msgid "You do not have permission to unpublish this page"
+msgstr "Je hebt geen toestemming deze pagina te onpubliceren"
+
+#: admin/pageadmin.py:1148
+msgid "This page was never published"
+msgstr "Deze pagina is nooit gepubliceerd."
+
+#: admin/pageadmin.py:1151
+#, python-format
+msgid "The %(language)s page \"%(page)s\" was successfully unpublished"
+msgstr "De %(language)s pagina \"%(page)s\"  is succesvol ge-onpubliceerd."
+
+#: admin/pageadmin.py:1182
 #, python-format
 msgid "The page \"%s\" was successfully reverted."
 msgstr "De pagina \"%s\" is succesvol teruggedraaid."
 
-#: admin/pageadmin.py:1031
+#: admin/pageadmin.py:1217
 #, python-format
 msgid "%(name)s object with primary key %(key)r does not exist."
 msgstr "%(name)s-object met primaire sleutel %(key)r bestaat niet."
 
-#: admin/pageadmin.py:1037
+#: admin/pageadmin.py:1223
 msgid "There only exists one translation for this page"
 msgstr "Er bestaat slechts één vertaling voor deze pagina"
 
-#: admin/pageadmin.py:1066
+#: admin/pageadmin.py:1252
 #, python-format
 msgid "Title and plugins with language %(language)s was deleted"
 msgstr "Titel en plugins voor de taal %(language)s zijn verwijderd"
 
-#: admin/pageadmin.py:1088 admin/placeholderadmin.py:498
-#: admin/placeholderadmin.py:537
+#: admin/pageadmin.py:1275 admin/placeholderadmin.py:505
+#: admin/placeholderadmin.py:545
 msgid "Are you sure?"
 msgstr "Weet je het zeker?"
 
-#: admin/pageadmin.py:1138
-#, python-format
-msgid "The page \"%s\" was successfully unpublished"
-msgstr "Het publiceren van pagina \"%s\" is suucesvol ongedaan gemaakt."
-
-#: admin/pageadmin.py:1140
-#, python-format
-msgid "The page \"%s\" was successfully published"
-msgstr "De pagina \"%s\" is succesvol gepubliceerd"
-
-#: admin/pageadmin.py:1167
+#: admin/pageadmin.py:1314
 msgid "You do not have permission to change this page's in_navigation status"
 msgstr "Je bent niet toegestaan om de in_navigatie toestand van deze pagina aan te passen"
 
-#: admin/pageadmin.py:1200
+#: admin/pageadmin.py:1338
+msgid "Page Types"
+msgstr "Paginatypes"
+
+#: admin/pageadmin.py:1394
 msgid "You do not have permission to edit this page"
 msgstr "U heeft geen toestemming om deze pagina te bewerken."
 
-#: admin/permissionadmin.py:84
+#: admin/permissionadmin.py:83
 msgid "View restriction"
 msgstr "Bekijk beperking"
 
-#: admin/permissionadmin.py:85
+#: admin/permissionadmin.py:84
 msgid "View restrictions"
 msgstr "Bekijk beperkingen"
 
-#: admin/permissionadmin.py:140 models/permissionmodels.py:100
+#: admin/permissionadmin.py:139 models/permissionmodels.py:120
 msgid "Page permissions"
 msgstr "Pagina-rechten"
 
-#: admin/permissionadmin.py:141
+#: admin/permissionadmin.py:140
 msgid "User & Group permissions"
 msgstr "Gebruikers- & groepsrechten"
 
-#: admin/permissionadmin.py:142
+#: admin/permissionadmin.py:141
 msgid "Page permissions management"
 msgstr "Beheer paginarechten"
 
-#: admin/placeholderadmin.py:72
-#, python-format
-msgid "Fields %s not editabled in the frontend"
-msgstr ""
-
 #: admin/placeholderadmin.py:74
-msgid "You do not have permission to edit this item"
-msgstr ""
+#, python-format
+msgid "Field %s not found"
+msgstr "Veld %s is niet gevonden"
 
-#: admin/placeholderadmin.py:233
+#: admin/placeholderadmin.py:80
+msgid "You do not have permission to edit this item"
+msgstr "U heeft geen toestemming om dit item te bewerken."
+
+#: admin/placeholderadmin.py:229
 msgid "You do not have permission to add a plugin"
 msgstr "U heeft geen toestemming om een plugin toe te voegen."
 
-#: admin/placeholderadmin.py:259
+#: admin/placeholderadmin.py:255
 msgid "Parent plugin language must be same as language!"
-msgstr ""
+msgstr "De 'parent plugin taal' moet hetzelfde zijn als 'taal'!"
 
-#: admin/placeholderadmin.py:357
+#: admin/placeholderadmin.py:353
 msgid "You do not have permission to edit this plugin"
 msgstr "U heeft geen toestemming om deze plugins te bewerken."
 
-#: admin/placeholderadmin.py:437
+#: admin/placeholderadmin.py:434
 msgid "You have no permission to move this plugin"
 msgstr "U heeft geen toestemming om deze plugin te verplaatsen."
 
-#: admin/placeholderadmin.py:475 admin/placeholderadmin.py:486
+#: admin/placeholderadmin.py:482 admin/placeholderadmin.py:493
 msgid "You do not have permission to delete this plugin"
 msgstr "U heeft geen toestemming om deze plugin te verwijderen."
 
-#: admin/placeholderadmin.py:490
+#: admin/placeholderadmin.py:497
 #, python-format
 msgid "The %(name)s plugin \"%(obj)s\" was deleted successfully."
 msgstr "De %(name)s plugin \"%(obj)s\" is succesvol verwijderd."
 
-#: admin/placeholderadmin.py:496 admin/placeholderadmin.py:535
+#: admin/placeholderadmin.py:503 admin/placeholderadmin.py:543
 #, python-format
 msgid "Cannot delete %(name)s"
 msgstr "Kan %(name)s niet verwijderen"
 
-#: admin/placeholderadmin.py:516 admin/placeholderadmin.py:526
+#: admin/placeholderadmin.py:523 admin/placeholderadmin.py:534
 msgid "You do not have permission to clear this placeholder"
 msgstr "U heeft geen toestemming de placeholder leeg te maken."
 
-#: admin/placeholderadmin.py:530
+#: admin/placeholderadmin.py:538
 #, python-format
 msgid "The placeholder \"%(obj)s\" was cleared successfully."
 msgstr "De placeholder \"%(obj)s\" is succesvol leeggemaakt."
 
-#: admin/placeholderadmin.py:540
+#: admin/placeholderadmin.py:548
 msgid "placeholder"
 msgstr "placeholder"
 
-#: admin/useradmin.py:26
+#: admin/useradmin.py:30 admin/useradmin.py:32
 msgid "User details"
 msgstr "Gebruikersdetails"
 
-#: admin/useradmin.py:27
+#: admin/useradmin.py:34
 msgid "Groups"
 msgstr "Groepen"
 
-#: admin/useradmin.py:37 templates/cms/toolbar/items/login.html:5
+#: admin/useradmin.py:48 templates/cms/toolbar/items/login.html:6
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: admin/dialog/forms.py:9
+#: admin/dialog/forms.py:10
 msgid "Copy permissions"
-msgstr "Kopiëer rechten"
+msgstr "Kopieer rechten"
 
-#: forms/fields.py:19
+#: forms/fields.py:30
 msgid "Select a valid site"
 msgstr "Selecteer een geldige site"
 
-#: forms/fields.py:20
+#: forms/fields.py:31
 msgid "Select a valid page"
 msgstr "Selecteer een geldige pagina"
 
-#: forms/widgets.py:143
+#: forms/widgets.py:221
 msgid "Add Another"
 msgstr "Nog één toevoegen"
 
-#: models/moderatormodels.py:26
-msgid "created"
-msgstr "aangemaakt"
-
-#: models/moderatormodels.py:27
-msgid "changed"
-msgstr "aangepast"
-
-#: models/moderatormodels.py:39
-msgid "Page moderator state"
-msgstr "Pagina moderatie-toestand"
-
-#: models/moderatormodels.py:40
-msgid "Page moderator states"
-msgstr "Pagina moderatie-toestanden"
-
-#: models/pagemodel.py:37
+#: models/pagemodel.py:38
 msgid "for logged in users only"
 msgstr "alleen voor aangemelde gebruikers"
 
-#: models/pagemodel.py:38
+#: models/pagemodel.py:39
 msgid "for anonymous users only"
 msgstr "alleen voor anonieme gebruikers"
 
-#: models/pagemodel.py:48
+#: models/pagemodel.py:50
 msgid "created by"
 msgstr "aangemaakt door"
 
-#: models/pagemodel.py:49 templates/admin/cms/page/tree/base_header.html:16
+#: models/pagemodel.py:51
 msgid "changed by"
 msgstr "bewerkt door"
 
-#: models/pagemodel.py:54
+#: models/pagemodel.py:56 templates/admin/cms/page/tree/menu_item.html:73
 msgid "publication date"
 msgstr "publicatiedatum"
 
-#: models/pagemodel.py:55
+#: models/pagemodel.py:57
 msgid ""
 "When the page should go live. Status must be \"Published\" for page to go "
 "live."
 msgstr "Wanneer de pagina publiek moet worden. Status moet op \"Gepubliceerd\" staan om publiek te worden."
 
-#: models/pagemodel.py:56
+#: models/pagemodel.py:58 templates/admin/cms/page/tree/menu_item.html:74
 msgid "publication end date"
 msgstr "datum einde publicatie"
 
-#: models/pagemodel.py:57
+#: models/pagemodel.py:59
 msgid "When to expire the page. Leave empty to never expire."
 msgstr "Wanneer de pagina verloopt. Laat leeg om nooit te laten verlopen."
 
-#: models/pagemodel.py:59 templates/admin/cms/page/tree/base_header.html:10
+#: models/pagemodel.py:65
 msgid "in navigation"
 msgstr "in navigatie"
 
-#: models/pagemodel.py:60
+#: models/pagemodel.py:66
 msgid "soft root"
 msgstr "schijn-oorsprong"
 
-#: models/pagemodel.py:61
+#: models/pagemodel.py:67
 msgid "All ancestors will not be displayed in the navigation"
 msgstr "Alle ouders zullen niet worden weergegeven in de navigatie"
 
-#: models/pagemodel.py:62
+#: models/pagemodel.py:68
 msgid "id"
 msgstr "id"
 
-#: models/pagemodel.py:63
+#: models/pagemodel.py:69
 msgid ""
-"An unique identifier that is used with the page_url templatetag for linking "
+"A unique identifier that is used with the page_url templatetag for linking "
 "to this page"
-msgstr "Een unieke naam die door de 'page_url' sjabloon-tag wordt gebruikt om naar deze pagina te verwijzen."
+msgstr "Een unieke identificatie die gebruikt wordt door de page_url templatetag voor koppelingen naar deze pagina"
 
-#: models/pagemodel.py:64
+#: models/pagemodel.py:70
 msgid "attached menu"
 msgstr "gekoppeld menu"
 
-#: models/pagemodel.py:65
-msgid "is published"
-msgstr "is gepubliceerd"
-
-#: models/pagemodel.py:67 plugins/snippet/models.py:16
+#: models/pagemodel.py:71 templates/admin/cms/page/tree/menu_item.html:77
 msgid "template"
 msgstr "sjabloon"
 
-#: models/pagemodel.py:68
+#: models/pagemodel.py:72
 msgid "The template used to render the content."
 msgstr "Het sjabloon dat gebruikt wordt om de inhoud weer te geven."
 
-#: models/pagemodel.py:70
+#: models/pagemodel.py:74
 msgid "The site the page is accessible at."
 msgstr "De website waarop deze pagina toegankelijk is."
 
-#: models/pagemodel.py:70
+#: models/pagemodel.py:74
 msgid "site"
 msgstr "website"
 
-#: models/pagemodel.py:72
+#: models/pagemodel.py:77
 msgid "login required"
 msgstr "inloggen vereist"
 
-#: models/pagemodel.py:73
+#: models/pagemodel.py:78
 msgid "menu visibility"
 msgstr "menu zichtbaarheid"
 
-#: models/pagemodel.py:75
+#: models/pagemodel.py:80
 msgid "limit when this page is visible in the menu"
 msgstr "beperk wanneer deze pagina zichtbaar is in het menu"
 
-#: models/pagemodel.py:77
+#: models/pagemodel.py:82
 msgid "application"
 msgstr "applicatie"
 
-#: models/pagemodel.py:78
-msgid "application namespace"
-msgstr "applicatie namespace"
+#: models/pagemodel.py:83
+msgid "application instance name"
+msgstr "applicatie instance naam"
 
-#: models/pagemodel.py:104 models/permissionmodels.py:94
-#: models/titlemodels.py:25 plugins/inherit/forms.py:9 plugins/link/forms.py:9
-#: plugins/link/models.py:15 plugins/picture/models.py:25
-#: plugins/teaser/models.py:16
+#: models/pagemodel.py:104
+msgid "Inherit from parent page"
+msgstr "Van bovenliggende pagina erven"
+
+#: models/pagemodel.py:105
+msgid "Deny"
+msgstr "Ontzeggen"
+
+#: models/pagemodel.py:106
+msgid "Only this website"
+msgstr "Alleen deze website"
+
+#: models/pagemodel.py:107
+msgid "Allow"
+msgstr "Toestaan"
+
+#: models/pagemodel.py:123 models/permissionmodels.py:114
+#: models/titlemodels.py:27
 msgid "page"
 msgstr "pagina"
 
-#: models/pagemodel.py:105
+#: models/pagemodel.py:124
 msgid "pages"
 msgstr "pagina's"
 
-#: models/pagemodel.py:793
+#: models/pagemodel.py:821
+msgid "Empty"
+msgstr "Leeg"
+
+#: models/pagemodel.py:942
 msgid "default"
 msgstr "standaard"
 
-#: models/permissionmodels.py:28
+#: models/permissionmodels.py:49
 msgid "Current page"
 msgstr "Huidige pagina"
 
-#: models/permissionmodels.py:29
+#: models/permissionmodels.py:50
 msgid "Page children (immediate)"
 msgstr "Direct onderliggende pagina's"
 
-#: models/permissionmodels.py:30
+#: models/permissionmodels.py:51
 msgid "Page and children (immediate)"
 msgstr "Deze en direct onderliggende pagina's"
 
-#: models/permissionmodels.py:31
+#: models/permissionmodels.py:52
 msgid "Page descendants"
 msgstr "Alle onderliggende pagina's"
 
-#: models/permissionmodels.py:32
+#: models/permissionmodels.py:53
 msgid "Page and descendants"
 msgstr "Deze en alle onderliggende pagina's"
 
-#: models/permissionmodels.py:41
+#: models/permissionmodels.py:61
 msgid "group"
 msgstr "groep"
 
-#: models/permissionmodels.py:44
+#: models/permissionmodels.py:64
 msgid "can edit"
 msgstr "kan bewerken"
 
-#: models/permissionmodels.py:45
+#: models/permissionmodels.py:65
 msgid "can add"
 msgstr "kan toevoegen"
 
-#: models/permissionmodels.py:46
+#: models/permissionmodels.py:66
 msgid "can delete"
 msgstr "kan verwijderen"
 
-#: models/permissionmodels.py:47
+#: models/permissionmodels.py:67
 msgid "can change advanced settings"
 msgstr "kan geavanceerde instellingen aanpassen"
 
-#: models/permissionmodels.py:48
+#: models/permissionmodels.py:68
 msgid "can publish"
 msgstr "kan publiceren"
 
-#: models/permissionmodels.py:49
+#: models/permissionmodels.py:69
 msgid "can change permissions"
 msgstr "kan rechten aanpassen"
 
-#: models/permissionmodels.py:49
+#: models/permissionmodels.py:69
 msgid "on page level"
 msgstr "op pagina-niveau"
 
-#: models/permissionmodels.py:50
+#: models/permissionmodels.py:70
 msgid "can move"
 msgstr "kan verplaatsen"
 
-#: models/permissionmodels.py:51
+#: models/permissionmodels.py:71
 msgid "view restricted"
 msgstr "toegang tot view beperkt"
 
-#: models/permissionmodels.py:51
+#: models/permissionmodels.py:71
 msgid "frontend view restriction"
 msgstr "beperking van toegang tot view door frontend"
 
-#: models/permissionmodels.py:75
+#: models/permissionmodels.py:95
 msgid "can recover pages"
 msgstr "kan pagina's herstellen"
 
-#: models/permissionmodels.py:75
+#: models/permissionmodels.py:95
 msgid "can recover any deleted page"
 msgstr "kan iedere verwijderde pagina herstellen"
 
-#: models/permissionmodels.py:76
+#: models/permissionmodels.py:96
 msgid "If none selected, user haves granted permissions to all sites."
 msgstr "Als niets gekozen is, heeft de gebruiker rechten voor alle websites."
 
-#: models/permissionmodels.py:76
+#: models/permissionmodels.py:96
 msgid "sites"
 msgstr "websites"
 
-#: models/permissionmodels.py:81
+#: models/permissionmodels.py:101
 msgid "Page global permission"
 msgstr "Globaal pagina-recht"
 
-#: models/permissionmodels.py:82
+#: models/permissionmodels.py:102
 msgid "Pages global permissions"
 msgstr "Globale pagina-rechten"
 
-#: models/permissionmodels.py:93 templates/admin/cms/page/permissions.html:15
+#: models/permissionmodels.py:113 templates/admin/cms/page/permissions.html:16
 msgid "Grant on"
 msgstr "Toestemming aan"
 
-#: models/permissionmodels.py:99
+#: models/permissionmodels.py:119
 msgid "Page permission"
 msgstr "Pagina-rechten"
 
-#: models/permissionmodels.py:114
+#: models/permissionmodels.py:134
 msgid "User (page)"
 msgstr "Gebruiker (pagina)"
 
-#: models/permissionmodels.py:115
+#: models/permissionmodels.py:135
 msgid "Users (page)"
 msgstr "Gebruikers (pagina)"
 
-#: models/permissionmodels.py:125
+#: models/permissionmodels.py:145
 msgid "User group (page)"
 msgstr "Gebruikersgroep (pagina)"
 
-#: models/permissionmodels.py:126
+#: models/permissionmodels.py:146
 msgid "User groups (page)"
 msgstr "Gebruikersgroepen (pagina)"
 
-#: models/placeholdermodel.py:15
+#: models/placeholdermodel.py:21
 msgid "slot"
 msgstr "plek"
 
-#: models/placeholdermodel.py:16 plugins/flash/models.py:12
-#: plugins/googlemap/models.py:38 plugins/video/models.py:16
+#: models/placeholdermodel.py:22
 msgid "width"
 msgstr "breedte"
 
-#: models/pluginmodel.py:86
+#: models/pluginmodel.py:74
 msgid "position"
 msgstr "positie"
 
-#: models/pluginmodel.py:87 models/titlemodels.py:13
-#: plugins/inherit/models.py:11
+#: models/pluginmodel.py:75 models/titlemodels.py:15
 msgid "language"
 msgstr "taal"
 
-#: models/pluginmodel.py:88
+#: models/pluginmodel.py:76
 msgid "plugin_name"
 msgstr "pluginnaam"
 
-#: models/pluginmodel.py:89 models/titlemodels.py:26
+#: models/pluginmodel.py:77 models/titlemodels.py:28
 msgid "creation date"
 msgstr "datum aangemaakt"
 
-#: models/pluginmodel.py:149
+#: models/pluginmodel.py:138
 msgid "<Empty>"
 msgstr "<Leeg>"
 
@@ -882,487 +960,99 @@ msgstr "gebruikers instelling"
 msgid "user settings"
 msgstr "gebruikers instellingen"
 
-#: models/titlemodels.py:14 models/titlemodels.py:15 models/titlemodels.py:17
-#: plugins/file/models.py:29 plugins/teaser/models.py:12
-#: templates/admin/cms/page/tree/base_header.html:7
-msgid "title"
-msgstr "titel"
-
-#: models/titlemodels.py:16
-msgid "overwrite the title (html title tag)"
-msgstr "overschrijf de titel (html 'title'-tag)"
-
-#: models/titlemodels.py:18
-msgid "overwrite the title in the menu"
-msgstr "overschrijf de titel in het menu"
-
-#: models/titlemodels.py:19 plugins/teaser/models.py:23
-msgid "description"
-msgstr "beschrijving"
-
-#: models/titlemodels.py:20
-msgid "The text displayed in search engines."
-msgstr "De tekst die wordt getoond in zoekmachines."
-
-#: models/titlemodels.py:21
-msgid "slug"
-msgstr "slug"
-
-#: models/titlemodels.py:22
-msgid "Path"
-msgstr "Pad"
-
-#: models/titlemodels.py:23
-msgid "has url overwrite"
-msgstr "heeft overschreven URL"
-
-#: models/titlemodels.py:24
-msgid "redirect"
-msgstr "doorsturen"
-
-#: plugins/utils.py:146
-#, python-format
-msgid "This placeholder already has the maximum number of plugins (%s)."
-msgstr "Deze placeholder bevat al het maximale aantal plugins (%s)."
-
-#: plugins/utils.py:156
-#, python-format
-msgid ""
-"This placeholder already has the maximum number (%(limit)s) of allowed "
-"%(plugin_name)s plugins."
-msgstr "Deze placeholder bevat al het maximale aantal (%(limit)s) van toegestane %(plugin_name)s plugins."
-
-#: plugins/file/cms_plugins.py:9
-msgid "File"
-msgstr "Bestand"
-
-#: plugins/file/models.py:28 plugins/flash/models.py:11
-msgid "file"
-msgstr "bestand"
-
-#: plugins/file/templates/cms/plugins/file.html:6
-msgid "file missing!"
-msgstr "Bestand ontbreekt!"
-
-#: plugins/flash/cms_plugins.py:9
-msgid "Flash"
-msgstr "Flash"
-
-#: plugins/flash/models.py:11
-msgid "use swf file"
-msgstr "gebruik swf-bestand"
-
-#: plugins/flash/models.py:13 plugins/googlemap/models.py:40
-#: plugins/video/models.py:17
-msgid "height"
-msgstr "hoogte"
-
-#: plugins/flash/templates/cms/plugins/flash.html:40
-#: plugins/video/templates/cms/plugins/video.html:60
-msgid "Missing flash plugin. Please download the latest Adobe Flash Player: "
-msgstr "Flash-plugin ontbreekt. Gelieve de laatste versie van Adobe Flash Player te downloaden:"
-
-#: plugins/flash/templates/cms/plugins/flash.html:42
-#: plugins/video/templates/cms/plugins/video.html:62
-msgid "Get Adobe Flash Player"
-msgstr "Download Adobe Flash Player"
-
-#: plugins/googlemap/cms_plugins.py:10
-msgid "Google Map"
-msgstr "Google kaart"
-
-#: plugins/googlemap/cms_plugins.py:19
-msgid "Advanced"
-msgstr "Geavanceerd"
-
-#: plugins/googlemap/forms.py:23
-msgid "Must be a positive integer followed by “px” or “%”."
-msgstr "Waarde groter dan of gelijk aan 0 en gevolgd door \"px\" of \"%\" vereist."
-
-#: plugins/googlemap/forms.py:26
-msgid "Must be a positive integer followed by “px”."
-msgstr "Waarde groter dan of gelijk aan 0 en gevolgd door \"px\" vereist."
-
-#: plugins/googlemap/models.py:12
-msgid "map title"
-msgstr "kaart titel"
-
-#: plugins/googlemap/models.py:15
-msgid "address"
-msgstr "adres"
-
-#: plugins/googlemap/models.py:16
-msgid "zip code"
-msgstr "postcode"
-
-#: plugins/googlemap/models.py:17
-msgid "city"
-msgstr "stad"
-
-#: plugins/googlemap/models.py:19
-msgid "additional content"
-msgstr "aanvullende inhoud"
-
-#: plugins/googlemap/models.py:21
-msgid "Displayed under address in the bubble."
-msgstr "Weergegeven adres in de popup."
-
-#: plugins/googlemap/models.py:23
-msgid "zoom level"
-msgstr "zoom-niveau"
-
-#: plugins/googlemap/models.py:26
-msgid "latitude"
-msgstr "breedtegraad"
-
-#: plugins/googlemap/models.py:28
-msgid "Use latitude & longitude to fine tune the map position."
-msgstr "Gebruik breedtegraad & lengtegraad om de positie op de kaart nauwkeurig in te stellen."
-
-#: plugins/googlemap/models.py:30
-msgid "longitude"
-msgstr "lengtegraad"
-
-#: plugins/googlemap/models.py:33
-msgid "route planer title"
-msgstr "routeplanner-titel"
-
-#: plugins/googlemap/models.py:35
-msgid "Calculate your fastest way to here"
-msgstr "Bereken de snelste weg hier naartoe"
-
-#: plugins/googlemap/models.py:36
-msgid "route planer"
-msgstr "routeplanner"
-
-#: plugins/googlemap/models.py:39
-msgid "Plugin width (in pixels or percent)."
-msgstr "Breedte van de plugin (in pixels of percentage)."
-
-#: plugins/googlemap/models.py:41
-msgid "Plugin height (in pixels)."
-msgstr "Hoogte van de plugin (in pixels)."
-
-#: plugins/googlemap/models.py:49
-msgid "Map"
-msgstr "Kaart"
-
-#: plugins/googlemap/templates/cms/plugins/googlemap.html:72
-msgid "Your address: "
-msgstr "Uw adres:"
-
-#: plugins/googlemap/templates/cms/plugins/googlemap.html:74
-msgid "Calculate route"
-msgstr "Bereken route"
-
-#: plugins/inherit/cms_plugins.py:17
-msgid "Inherit Plugins from Page"
-msgstr "Plugins overerfen van de Pagina"
-
-#: plugins/inherit/forms.py:23
-msgid "Language or Page must be filled out"
-msgstr "Taal of Pagina moet ingevuld zijn"
-
-#: plugins/inherit/models.py:10
-msgid ""
-"Choose a page to include its plugins into this placeholder, empty will "
-"choose current page"
-msgstr "Kies een pagina om diens plugins in de 'placeholder' in te voegen, indien leeggelaten wordt de huidige pagina gekozen"
-
-#: plugins/inherit/models.py:11
-msgid "Optional: the language of the plugins you want"
-msgstr "Optioneel: de gewenste taal van de plugins"
-
-#: plugins/link/cms_plugins.py:12
-msgid "Link"
-msgstr "Link"
-
-#: plugins/link/models.py:13 plugins/snippet/models.py:14
-msgid "name"
-msgstr "naam"
-
-#: plugins/link/models.py:14 plugins/picture/models.py:23
-#: plugins/teaser/models.py:22 stacks/forms.py:13
-msgid "link"
-msgstr "link"
-
-#: plugins/link/models.py:15
-msgid "A link to a page has priority over a text link."
-msgstr "Een link naar een pagina heeft voorang op een tekst-link."
-
-#: plugins/link/models.py:16
-msgid "mailto"
-msgstr "mailto"
-
-#: plugins/link/models.py:16
-msgid "An email adress has priority over a text link."
-msgstr "Een e-mailadres heeft voorang op een tekst-link."
-
-#: plugins/link/models.py:17
-msgid "target"
-msgstr "venster"
-
-#: plugins/link/models.py:18
-msgid "same window"
-msgstr "zelfde venster"
-
-#: plugins/link/models.py:19
-msgid "new window"
-msgstr "nieuw venster"
-
-#: plugins/link/models.py:20
-msgid "parent window"
-msgstr "bovenliggende venster"
-
-#: plugins/link/models.py:21
-msgid "topmost frame"
-msgstr "bovenste venster"
-
-#: plugins/picture/cms_plugins.py:9
-msgid "Picture"
-msgstr "Afbeelding"
-
-#: plugins/picture/models.py:17
-msgid "left"
-msgstr "links"
-
-#: plugins/picture/models.py:18
-msgid "right"
-msgstr "rechts"
-
-#: plugins/picture/models.py:19
-msgid "center"
-msgstr "centreren"
-
-#: plugins/picture/models.py:22 plugins/teaser/models.py:13
-#: plugins/video/models.py:14
-msgid "image"
-msgstr "afbeelding"
-
-#: plugins/picture/models.py:24
-msgid "If present, clicking on image will take user to link."
-msgstr "Indien aanwezig, zal klikken op een plaatje de gebruiker naar de link brengen."
-
-#: plugins/picture/models.py:27
-msgid ""
-"If present, clicking on image will take user         to specified page."
-msgstr "Indien aanwezig, zal klikken op een plaatje de gebruiker naar de bepaalde pagina brengen."
-
-#: plugins/picture/models.py:29
-msgid "alternate text"
-msgstr "alternatieve tekst"
-
-#: plugins/picture/models.py:30
-msgid ""
-"Specifies an alternate text for an image, if         the image cannot be "
-"displayed.<br />Is also used by search engines to         classify the "
-"image."
-msgstr "Specificeer een alternatieve tekst voor een plaatje, voor als het plaatje niet getoond kan worden.<br> Wordt ook gebruikt door de zoekmachine om een plaatje te classificeren."
-
-#: plugins/picture/models.py:33
-msgid "long description"
-msgstr "lange beschrijving"
-
-#: plugins/picture/models.py:34
-msgid ""
-"When user hovers above picture,        this text will appear in a popup."
-msgstr "Als een gebruiker boven een plaatje hangt, zal deze tekst verschijnen in een popup"
-
-#: plugins/picture/models.py:36
-msgid "side"
-msgstr "kant"
-
-#: plugins/picture/models.py:37
-msgid "Move image left, right or center."
-msgstr "Verplaats plaatje naar link, rechts of het midden."
-
-#: plugins/picture/models.py:54
-msgid "You can enter a Link or a Page, but not both."
-msgstr "U kunt een Link of Pagina toevoegen, maar niet beide."
-
-#: plugins/snippet/cms_plugins.py:13 plugins/snippet/models.py:26
-#: plugins/snippet/models.py:35
-msgid "Snippet"
-msgstr "Knipsel"
-
-#: plugins/snippet/cms_plugins.py:31
-#, python-format
-msgid "Template %(template)s does not exist."
-msgstr "Het sjabloon %(template)s bestaat niet."
-
-#: plugins/snippet/models.py:15
-msgid "HTML"
-msgstr "HTML"
-
-#: plugins/snippet/models.py:17
-msgid ""
-"Enter a template (i.e. \"snippets/plugin_xy.html\") which will be rendered. "
-msgstr "Voer een sjabloon in (bijv. \"knipsels/plugin_xy.html\") dat weergegeven zal worden."
-
-#: plugins/snippet/models.py:27
-msgid "Snippets"
-msgstr "Knipsels"
-
-#: plugins/teaser/cms_plugins.py:8
-msgid "Teaser"
-msgstr "Teaser"
-
-#: plugins/teaser/models.py:17
-msgid "If present image will be clickable"
-msgstr "Indien opgegegven zal de afbeelding klikbaar zijn"
-
-#: plugins/teaser/models.py:22
-msgid "If present image will be clickable."
-msgstr "Indien opgegeven zal de afbeelding klikbaar zijn."
-
-#: plugins/teaser/templates/cms/plugins/teaser.html:11
-msgid "more"
-msgstr "meer"
-
-#: plugins/video/cms_plugins.py:10
-msgid "Video"
-msgstr "Video"
-
-#: plugins/video/cms_plugins.py:42
-msgid "Color Settings"
-msgstr "Kleurinstellingen"
-
-#: plugins/video/models.py:12
-msgid "movie file"
-msgstr "videobestand"
-
-#: plugins/video/models.py:12
-msgid "use .flv file or h264 encoded video file"
-msgstr "Gebruik .flv of h264 video bestand"
-
-#: plugins/video/models.py:13
-msgid "movie url"
-msgstr "video url"
-
-#: plugins/video/models.py:13
-msgid ""
-"vimeo or youtube video url. Example: "
-"http://www.youtube.com/watch?v=-iJ7bs4mTUY"
-msgstr "Vimeo- of YouTube-URL. Voorbeeld: http://www.youtube.com/watch?v=-iJ7bs4mTUY"
-
-#: plugins/video/models.py:14
-msgid "preview image file"
-msgstr "voorbeeld van afbeelding bekijken"
-
-#: plugins/video/models.py:19
-msgid "auto play"
-msgstr "automatisch afspelen"
-
-#: plugins/video/models.py:20
-msgid "auto hide"
-msgstr "automatisch verbergen"
-
-#: plugins/video/models.py:21
-msgid "fullscreen"
-msgstr "volledig venster"
-
-#: plugins/video/models.py:22
-msgid "loop"
-msgstr "herhalen"
-
-#: plugins/video/models.py:25
-msgid "background color"
-msgstr "achtergrondkleur"
-
-#: plugins/video/models.py:25 plugins/video/models.py:26
-#: plugins/video/models.py:27 plugins/video/models.py:28
-#: plugins/video/models.py:29 plugins/video/models.py:30
-#: plugins/video/models.py:31 plugins/video/models.py:32
-msgid "Hexadecimal, eg ff00cc"
-msgstr "Hexadecimaal, bv. fff000"
-
-#: plugins/video/models.py:26
-msgid "text color"
-msgstr "tekst kleur"
-
-#: plugins/video/models.py:27
-msgid "seekbar color"
-msgstr "zoekbar kleur"
-
-#: plugins/video/models.py:28
-msgid "seekbar bg color"
-msgstr "zoekbar achtergrondkleur"
-
-#: plugins/video/models.py:29
-msgid "loadingbar color"
-msgstr "laadbalk kleur"
-
-#: plugins/video/models.py:30
-msgid "button out color"
-msgstr "knop \"out\" kleur"
-
-#: plugins/video/models.py:31
-msgid "button over color"
-msgstr "knop \"over\" kleur"
-
-#: plugins/video/models.py:32
-msgid "button highlight color"
-msgstr "knop \"oplicht\" kleur"
-
-#: stacks/admin.py:34
-msgid "linked plugins"
-msgstr "gelinkte plugins"
-
-#: stacks/cms_plugins.py:12
-msgid "Stack"
-msgstr "Stack"
-
-#: stacks/forms.py:12 templates/admin/cms/page/tree/menu_item.html:42
-msgid "copy"
-msgstr "kopiëer"
-
-#: stacks/forms.py:15 stacks/models.py:44 stacks/models.py:81
-msgid "stack"
-msgstr "stack"
-
-#: stacks/forms.py:16
-msgid "insertion type"
-msgstr "invoegtype"
-
-#: stacks/forms.py:17
-msgid "language code"
-msgstr "taal code"
-
-#: stacks/models.py:26
+#: models/static_placeholder.py:28
 msgid "by template"
 msgstr "per sjabloon"
 
-#: stacks/models.py:27
+#: models/static_placeholder.py:29
 msgid "by code"
 msgstr "per code"
 
-#: stacks/models.py:30
-msgid "stack name"
-msgstr "stack naam"
+#: models/static_placeholder.py:32
+msgid "static placeholder name"
+msgstr "Statische placeholder naam"
 
-#: stacks/models.py:31
-msgid "Descriptive name to identify this stack. Not displayed to users."
-msgstr "Beschrijvende naam om deze stack te herkennen. Wordt niet aan de gebruiker getoond."
+#: models/static_placeholder.py:33
+msgid ""
+"Descriptive name to identify this static placeholder. Not displayed to "
+"users."
+msgstr "Beschrijvende naam om statische placeholder te identificeren. Wordt niet getoond aan gebruikers."
 
-#: stacks/models.py:33
-msgid "stack code"
-msgstr "stack code"
+#: models/static_placeholder.py:35
+msgid "placeholder code"
+msgstr "placeholder code"
 
-#: stacks/models.py:34
-msgid "To render the stack in templates."
-msgstr "Om de stack in sjablonen te renderen."
+#: models/static_placeholder.py:36
+msgid "To render the static placeholder in templates."
+msgstr "Om de statische placeholder in sjablonen te renderen."
 
-#: stacks/models.py:35
-msgid "stack content"
-msgstr "stack inhoud"
+#: models/static_placeholder.py:37
+msgid "placeholder content"
+msgstr "placeholder inhoud"
 
-#: stacks/models.py:39
+#: models/static_placeholder.py:41
 msgid "creation_method"
-msgstr ""
+msgstr "creation_method"
 
-#: stacks/models.py:45
-msgid "stacks"
-msgstr "stacks"
+#: models/static_placeholder.py:47
+msgid "static placeholder"
+msgstr "statische placeholder"
+
+#: models/static_placeholder.py:48
+msgid "static placeholders"
+msgstr "statische placeholders"
+
+#: models/static_placeholder.py:64
+msgid "A static placeholder with the same site and code already exists"
+msgstr "Er bestaat al een statische placeholder met dezelfde site en code"
+
+#: models/titlemodels.py:16 models/titlemodels.py:17 models/titlemodels.py:19
+msgid "title"
+msgstr "titel"
+
+#: models/titlemodels.py:18
+msgid "overwrite the title (html title tag)"
+msgstr "overschrijf de titel (html 'title'-tag)"
+
+#: models/titlemodels.py:20
+msgid "overwrite the title in the menu"
+msgstr "overschrijf de titel in het menu"
+
+#: models/titlemodels.py:21
+msgid "description"
+msgstr "beschrijving"
+
+#: models/titlemodels.py:22
+msgid "The text displayed in search engines."
+msgstr "De tekst die wordt getoond in zoekmachines."
+
+#: models/titlemodels.py:23
+msgid "slug"
+msgstr "slug"
+
+#: models/titlemodels.py:24
+msgid "Path"
+msgstr "Pad"
+
+#: models/titlemodels.py:25
+msgid "has url overwrite"
+msgstr "heeft overschreven URL"
+
+#: models/titlemodels.py:26
+msgid "redirect"
+msgstr "doorsturen"
+
+#: models/titlemodels.py:31
+msgid "is published"
+msgstr "is gepubliceerd"
+
+#: templates/admin/cms/extensions/change_form.html:5
+#: templates/admin/cms/page/change_form.html:74
+#: templates/admin/cms/page/submit_row.html:5
+#: templates/admin/cms/page/tree/copy_premissions.html:19
+#: templates/admin/cms/usersettings/change_form.html:16
+msgid "Save"
+msgstr "Opslaan"
 
 #: templates/admin/cms/mail/base.html:55
 #, python-format
@@ -1389,110 +1079,76 @@ msgstr "Wachtwoord:"
 msgid "Change a page"
 msgstr "Bewerk een pagina"
 
-#: templates/admin/cms/page/change_form.html:48
+#: templates/admin/cms/page/change_form.html:44
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
 msgstr[0] "Herstel a.u.b. de fout hieronder."
 msgstr[1] "Herstel a.u.b. de fouten hieronder."
 
-#: templates/admin/cms/page/change_form.html:66
+#: templates/admin/cms/page/change_form.html:62
 msgid "All permissions"
 msgstr "Alle rechten"
 
-#: templates/admin/cms/page/change_form.html:67
-#: templates/admin/cms/page/change_form.html:76
-#: templates/admin/cms/page/tree/base.html:90
+#: templates/admin/cms/page/change_form.html:63
+#: templates/admin/cms/page/tree/base.html:80
 msgid "Loading..."
 msgstr "Bezig met laden..."
 
 #: templates/admin/cms/page/change_form.html:75
-msgid "Page states"
-msgstr "Pagina toestanden"
-
-#: templates/admin/cms/page/change_form.html:86
-#: templates/admin/cms/page/submit_row.html:5
-#: templates/admin/cms/page/tree/copy_premissions.html:19
-#: templates/admin/cms/usersettings/change_form.html:16
-#: templates/admin/stacks/insert_stack.html:46
-msgid "Save"
-msgstr "Opslaan"
-
-#: templates/admin/cms/page/change_form.html:87
 #: templates/admin/cms/page/submit_row.html:15
 msgid "Save and continue editing"
 msgstr "Opslaan en opnieuw bewerken"
 
-#: templates/admin/cms/page/moderation_messages.html:5
-#: templates/admin/cms/page/moderation_states.html:7
-msgid "Action"
-msgstr "Actie"
-
-#: templates/admin/cms/page/moderation_messages.html:6
-#: templates/admin/cms/page/moderation_states.html:8
-msgid "Created"
-msgstr "Aangemaakt"
-
-#: templates/admin/cms/page/moderation_messages.html:7
-#: templates/admin/cms/page/moderation_states.html:9
-#: templates/admin/cms/page/permissions.html:6
+#: templates/admin/cms/page/permissions.html:7
 msgid "User"
 msgstr "Gebruiker"
 
-#: templates/admin/cms/page/moderation_messages.html:8
-#: templates/admin/cms/page/moderation_states.html:10
-msgid "Message"
-msgstr "Bericht"
-
-#: templates/admin/cms/page/moderation_states.html:25
-msgid "Page doesn't have any states."
-msgstr "Pagina heeft geen enkele status."
-
-#: templates/admin/cms/page/permissions.html:7
+#: templates/admin/cms/page/permissions.html:8
 msgid "Group"
 msgstr "Groep"
 
-#: templates/admin/cms/page/permissions.html:8
+#: templates/admin/cms/page/permissions.html:9
 msgid "Can edit"
 msgstr "Kan bewerken"
 
-#: templates/admin/cms/page/permissions.html:9
+#: templates/admin/cms/page/permissions.html:10
 msgid "Can add"
 msgstr "Kan toevoegen"
 
-#: templates/admin/cms/page/permissions.html:10
+#: templates/admin/cms/page/permissions.html:11
 msgid "Can delete"
 msgstr "Kan verwijderen"
 
-#: templates/admin/cms/page/permissions.html:11
+#: templates/admin/cms/page/permissions.html:12
 msgid "Can publish"
 msgstr "Kan publiceren"
 
-#: templates/admin/cms/page/permissions.html:12
+#: templates/admin/cms/page/permissions.html:13
 msgid "Can change permissions"
 msgstr "Kan rechten aanpassen"
 
-#: templates/admin/cms/page/permissions.html:13
+#: templates/admin/cms/page/permissions.html:14
 msgid "Can move"
 msgstr "Kan verplaatsen"
 
-#: templates/admin/cms/page/permissions.html:14
+#: templates/admin/cms/page/permissions.html:15
 msgid "Can view"
 msgstr "Kan bekijken"
 
-#: templates/admin/cms/page/permissions.html:22
 #: templates/admin/cms/page/permissions.html:23
+#: templates/admin/cms/page/permissions.html:24
 msgid "(global)"
 msgstr "(globaal)"
 
-#: templates/admin/cms/page/permissions.html:27
+#: templates/admin/cms/page/permissions.html:28
 msgid "(current)"
 msgstr "(huidig)"
 
-#: templates/admin/cms/page/permissions.html:44
+#: templates/admin/cms/page/permissions.html:45
 msgid "All"
 msgstr "Alle"
 
-#: templates/admin/cms/page/permissions.html:52
+#: templates/admin/cms/page/permissions.html:53
 msgid "Page doesn't inherit any permissions."
 msgstr "Pagina erft geen rechten."
 
@@ -1534,89 +1190,90 @@ msgstr "Stel %(verbose_name)s terug"
 msgid "Press the save button below to revert to this version of the object."
 msgstr "Druk op de Oplaan-knop hieronder om naa deze versie van het object terug te stellen."
 
+#: templates/admin/cms/page/plugin/error_form.html:4
+msgid "Edit model"
+msgstr "Wijzig model"
+
 #: templates/admin/cms/page/tree/base.html:4
 msgid "List of pages"
 msgstr "Lijst van pagina's"
 
 #: templates/admin/cms/page/tree/base.html:12
 msgid "Search"
-msgstr ""
+msgstr "Zoeken"
 
-#: templates/admin/cms/page/tree/base.html:51
+#: templates/admin/cms/page/tree/base.html:54
 msgid "Successfully moved"
 msgstr "Succesvol verplaatst"
 
-#: templates/admin/cms/page/tree/base.html:60
+#: templates/admin/cms/page/tree/base.html:55
+msgid "Changes within the tree might require a refresh."
+msgstr "Veranderingen binnen de boomstructuur kunnen het nodig maken dat u de pagina opnieuw laadt."
+
+#: templates/admin/cms/page/tree/base.html:56
 msgid "An error occured. Please reload the page"
 msgstr "Er is een fout opgetreden. Herlaad a.u.b. de pagina."
 
-#: templates/admin/cms/page/tree/base.html:83
+#: templates/admin/cms/page/tree/base.html:57
+#, python-format
+msgid "Are you sure you want to %%s this page?"
+msgstr "Weet u zeker dat u deze pagina wilt %%s?"
+
+#: templates/admin/cms/page/tree/base.html:73
 #, python-format
 msgid "Recover deleted %(name)s"
 msgstr "Herstel verwijderde %(name)s"
 
-#: templates/admin/cms/page/tree/base.html:86
+#: templates/admin/cms/page/tree/base.html:76
 #, python-format
 msgid "Add %(name)s"
 msgstr "Voeg %(name)s toe"
 
-#: templates/admin/cms/page/tree/base.html:98
+#: templates/admin/cms/page/tree/base.html:88
 msgid "Pages on:"
 msgstr "Pagina's op:"
 
-#: templates/admin/cms/page/tree/base.html:119
+#: templates/admin/cms/page/tree/base.html:108
 msgid "Filter:"
 msgstr "Filter:"
 
-#: templates/admin/cms/page/tree/base.html:119
+#: templates/admin/cms/page/tree/base.html:108
 msgid "on"
 msgstr "aan"
 
-#: templates/admin/cms/page/tree/base.html:119
+#: templates/admin/cms/page/tree/base.html:108
 msgid "off"
 msgstr "uit"
 
-#: templates/admin/cms/page/tree/base.html:121
+#: templates/admin/cms/page/tree/base.html:110
 msgid "Filter"
 msgstr "Filter"
 
-#: templates/admin/cms/page/tree/base_header.html:9
-msgid "actions"
-msgstr "acties"
+#: templates/admin/cms/page/tree/base_header.html:10
+msgid "Menu"
+msgstr "Menu"
 
 #: templates/admin/cms/page/tree/base_header.html:11
-msgid "published"
-msgstr "gepubliceerd"
+msgid "Actions"
+msgstr "Acties"
 
 #: templates/admin/cms/page/tree/base_header.html:12
-msgid "start"
-msgstr "start"
+msgid "Info"
+msgstr "Informatie"
 
-#: templates/admin/cms/page/tree/base_header.html:13
-msgid "end"
-msgstr "eind"
-
-#: templates/admin/cms/page/tree/base_header.html:14
-msgid "restricted"
-msgstr "beperkt"
-
-#: templates/admin/cms/page/tree/base_header.html:15
-msgid "last changes"
-msgstr "laatste aanpassingen"
-
-#: templates/admin/cms/page/tree/base_header.html:30
+#: templates/admin/cms/page/tree/base_header.html:26
 msgid ""
 "<em>There is no page around yet.</em><br /><a href=\"add/\" "
 "class=\"addlink\">Add page</a> now."
-msgstr ""
+msgstr "<em>Er is nog geen pagina aanwezig.</em><br />Nu een <a href=\"add/\" class=\"addlink\">pagina toevoegen</a>."
 
 #: templates/admin/cms/page/tree/copy_premissions.html:5
 msgid "Copy options"
-msgstr "Kopiëer-opties"
+msgstr "Kopieer-opties"
 
 #: templates/admin/cms/page/tree/copy_premissions.html:6
 msgid "Choose copy options"
-msgstr "Kies kopiëer-opties"
+msgstr "Kies kopieer-opties"
 
 #: templates/admin/cms/page/tree/copy_premissions.html:20
 msgid "Close"
@@ -1627,13 +1284,8 @@ msgid "select this page"
 msgstr "selecteer deze pagina"
 
 #: templates/admin/cms/page/tree/menu_item.html:6
-#: templates/admin/cms/page/tree/menu_item.html:7
 msgid "edit this page"
 msgstr "bewerk deze pagina"
-
-#: templates/admin/cms/page/tree/menu_item.html:7
-msgid "edit"
-msgstr "bewerken"
 
 #: templates/admin/cms/page/tree/menu_item.html:17
 msgid "insert above"
@@ -1660,107 +1312,127 @@ msgstr "Voorpagina"
 msgid "Application: %(apphook)s"
 msgstr "Applicatie: %(apphook)s"
 
-#: templates/admin/cms/page/tree/menu_item.html:30
+#: templates/admin/cms/page/tree/menu_item.html:29
 #, python-format
 msgid "Edit this page in %(language)s "
 msgstr "Bewerk deze pagina in %(language)s "
 
-#: templates/admin/cms/page/tree/menu_item.html:40
-#: templates/cms/toolbar/dragitem_item.html:13
-msgid "Cut"
-msgstr "Knip"
+#: templates/admin/cms/page/tree/menu_item.html:32
+msgid "Pick an action:"
+msgstr ""
 
-#: templates/admin/cms/page/tree/menu_item.html:40
-msgid "cut"
-msgstr "knip"
-
-#: templates/admin/cms/page/tree/menu_item.html:42
-#: templates/cms/toolbar/dragitem_item.html:12
-msgid "Copy"
-msgstr "kopiëer"
-
-#: templates/admin/cms/page/tree/menu_item.html:45
-#: templates/admin/cms/page/tree/menu_item.html:49
-msgid "Add Child"
-msgstr "Kind toevoegen"
-
-#: templates/admin/cms/page/tree/menu_item.html:45
-#: templates/admin/cms/page/tree/menu_item.html:49
-msgid "add"
-msgstr "toevoegen"
-
-#: templates/admin/cms/page/tree/menu_item.html:52
-msgid "delete"
-msgstr "verwijder"
-
-#: templates/admin/cms/page/tree/menu_item.html:65
+#: templates/admin/cms/page/tree/menu_item.html:33
 msgid "Unpublish"
 msgstr "Depubliceer"
 
-#: templates/admin/cms/page/tree/menu_item.html:66
-#: templates/admin/cms/page/tree/menu_item.html:80
+#: templates/admin/cms/page/tree/menu_item.html:34
 msgid "Publish"
 msgstr "Publiceer"
 
-#: templates/admin/cms/page/tree/menu_item.html:71
-msgid "View on page"
-msgstr "Toon op pagina"
+#: templates/admin/cms/page/tree/menu_item.html:42
+msgid "in menu"
+msgstr "in menu"
+
+#: templates/admin/cms/page/tree/menu_item.html:42
+msgid "not in menu"
+msgstr "niet in menu"
+
+#: templates/admin/cms/page/tree/menu_item.html:51
+msgid "Page settings (ALT-click for advanced settings)"
+msgstr ""
+
+#: templates/admin/cms/page/tree/menu_item.html:51
+msgid "page settings"
+msgstr "pagina instellingen"
+
+#: templates/admin/cms/page/tree/menu_item.html:53
+#: templates/cms/toolbar/dragitem.html:12
+msgid "Copy"
+msgstr "Kopieer"
+
+#: templates/admin/cms/page/tree/menu_item.html:53
+msgid "copy"
+msgstr "kopieer"
+
+#: templates/admin/cms/page/tree/menu_item.html:56
+#: templates/admin/cms/page/tree/menu_item.html:60
+msgid "Add Child"
+msgstr "Kind toevoegen"
+
+#: templates/admin/cms/page/tree/menu_item.html:56
+#: templates/admin/cms/page/tree/menu_item.html:60
+msgid "add"
+msgstr "toevoegen"
+
+#: templates/admin/cms/page/tree/menu_item.html:64
+#: templates/cms/toolbar/dragitem.html:13
+msgid "Cut"
+msgstr "Knippen"
+
+#: templates/admin/cms/page/tree/menu_item.html:64
+msgid "cut"
+msgstr "knippen"
+
+#: templates/admin/cms/page/tree/menu_item.html:66
+msgid "delete"
+msgstr "verwijder"
 
 #: templates/admin/cms/page/tree/menu_item.html:71
-msgid "view"
-msgstr "toon"
+msgid "info"
+msgstr "info"
 
-#: templates/admin/stacks/insert_stack.html:4
-#: templates/admin/stacks/insert_stack.html:24
-msgid "Insert Stack"
-msgstr "Stack invoegen"
+#: templates/admin/cms/page/tree/menu_item.html:75
+msgid "is restricted"
+msgstr "is beperkt"
+
+#: templates/admin/cms/page/tree/menu_item.html:76
+msgid "last change by"
+msgstr "laatst bewerkt door"
 
 #: templates/cms/toolbar/clipboard.html:24
 msgid "Empty Clipboard"
 msgstr "Klembord leegmaken"
 
-#: templates/cms/toolbar/dragbar.html:7
-#: templates/cms/toolbar/dragitem_item.html:9
+#: templates/cms/toolbar/dragbar.html:7 templates/cms/toolbar/dragitem.html:9
 msgid "Quicksearch"
 msgstr "Snelzoeken"
 
-#: templates/cms/toolbar/dragbar.html:9
-#: templates/cms/toolbar/dragitem_item.html:11
+#: templates/cms/toolbar/dragbar.html:9 templates/cms/toolbar/dragitem.html:11
 msgid "Settings"
 msgstr "Instellingen"
 
 #: templates/cms/toolbar/dragbar.html:10
 msgid "Copy all"
-msgstr "Alles kopieren"
+msgstr "Alles kopiëren"
 
-#: templates/cms/toolbar/dragbar.html:11
+#: templates/cms/toolbar/dragbar.html:12
+msgid "Copy from"
+msgstr "Gekopieerd van "
+
+#: templates/cms/toolbar/dragbar.html:14
 msgid "Empty all"
 msgstr "Alles leegmaken"
 
-#: templates/cms/toolbar/dragbar.html:12
-#: templates/cms/toolbar/dragitem_item.html:16
-msgid "Create stack"
-msgstr "Maak stack"
-
-#: templates/cms/toolbar/dragbar.html:13
-msgid "Insert stack"
-msgstr "Stack invoegen"
-
-#: templates/cms/toolbar/dragbar.html:23
+#: templates/cms/toolbar/dragbar.html:24
 msgid "Drop a plugin here"
 msgstr "Drop hier een plugin"
 
-#: templates/cms/toolbar/dragitem_item.html:14 templatetags/cms_tags.py:679
+#: templates/cms/toolbar/dragitem.html:14 templatetags/cms_tags.py:700
+#: templatetags/cms_tags.py:703
 msgid "Edit"
-msgstr "bewerken"
+msgstr "Bewerken"
 
 #: templates/cms/toolbar/dragitem_menu.html:5
 msgid "Available plugins"
 msgstr "Beschikbare plugins"
 
+#: templates/cms/toolbar/dragitem_menu.html:10
+msgid "Scroll for more"
+msgstr "Scroll voor meer"
+
 #: templates/cms/toolbar/toolbar.html:8
 msgid "Double-click to edit"
-msgstr ""
+msgstr "Dubbelklik om te bewerken"
 
 #: templates/cms/toolbar/toolbar.html:33
 #: templates/cms/toolbar/items/live_draft.html:4
@@ -1774,141 +1446,173 @@ msgstr "Concept"
 
 #: templates/cms/toolbar/toolbar.html:41
 msgid "Toggle toolbar"
-msgstr "Werrkbalk toggelen"
+msgstr "Werkbalk toggelen"
 
 #: templates/cms/toolbar/toolbar.html:83
 msgid "Start"
 msgstr "Start"
 
-#: templates/cms/toolbar/toolbar_javascript.html:33
+#: templates/cms/toolbar/toolbar.html:118
+msgid "This page has no preview!"
+msgstr "Deze pagina heeft geen voorvertoning!"
+
+#: templates/cms/toolbar/toolbar.html:119
+msgid "It is being redirected to:"
+msgstr "Wordt doorverwezen naar:"
+
+#: templates/cms/toolbar/toolbar_javascript.html:42
 #, python-format
 msgid "Development version using django CMS %(cms_version)s"
-msgstr ""
+msgstr "Ontwikkelversie gebruikt django CMS %(cms_version)s "
 
-#: templates/cms/toolbar/toolbar_javascript.html:34
+#: templates/cms/toolbar/toolbar_javascript.html:43
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: templates/cms/toolbar/toolbar_javascript.html:35
-msgid "<strong>The following error occured:</stron> "
-msgstr ""
+#: templates/cms/toolbar/toolbar_javascript.html:44
+msgid "The following error occured:"
+msgstr "De volgende fout is ontstaan:"
 
-#: templates/cms/toolbar/toolbar_javascript.html:36
+#: templates/cms/toolbar/toolbar_javascript.html:45
 msgid "Action successfull... reloading."
-msgstr ""
+msgstr "Actie geslaagd... herladen"
 
-#: templates/cms/toolbar/toolbar_javascript.html:37
+#: templates/cms/toolbar/toolbar_javascript.html:46
 msgid "Are you sure you want to delete this plugin?"
 msgstr "Weet je zeker dat je deze plugin wilt verwijderen?"
 
-#: templates/cms/toolbar/toolbar_javascript.html:55
+#: templates/cms/toolbar/toolbar_javascript.html:47
+msgid "Are you sure you want to publish this page?"
+msgstr ""
+
+#: templates/cms/toolbar/toolbar_javascript.html:65
+msgid ""
+"<strong>Login failed.</strong> Please check your credentials and try again."
+msgstr "<strong>Inloggen mislukt.</strong> Controleer je gegevens en probeer nog eens."
+
+#: templates/cms/toolbar/toolbar_javascript.html:66
 msgid "This page has unpublished changes."
 msgstr "Deze pagina heeft ongepubliceerde veranderingen."
 
-#: templates/cms/toolbar/items/login.html:4 toolbar/toolbar.py:20
+#: templates/cms/toolbar/items/login.html:5 toolbar/toolbar.py:22
 msgid "Username"
 msgstr "Gebruikersnaam"
-
-#: templates/cms/toolbar/items/login.html:15
-msgid ""
-"<strong>Login failed.</strong> Please check your credentials and try again."
-msgstr "<strong>Login mislukte.</strong> Controleer je gegevens en probeer nog eens."
 
 #: templates/cms/toolbar/items/logo.html:2
 msgid "django CMS"
 msgstr "django CMS"
 
-#: templatetags/cms_admin.py:135 templatetags/cms_admin.py:142
-#, python-format
-msgid "<span title=\"Restrictions: %(title)s\">%(icon)s</span>"
-msgstr "<span title=\"Beperkingen: %(title)s\">%(icon)s</span>"
+#: templatetags/cms_admin.py:68
+msgid "unpublished changes"
+msgstr "ongepubliceerde veranderingen"
 
-#: templatetags/cms_tags.py:99
+#: templatetags/cms_admin.py:71
+msgid "published"
+msgstr "gepubliceerd"
+
+#: templatetags/cms_admin.py:80
+msgid "unpublished parent"
+msgstr "Ongepubliceerde parent"
+
+#: templatetags/cms_admin.py:83
+msgid "unpublished"
+msgstr "ongepubliceerd"
+
+#: templatetags/cms_admin.py:86
+msgid "no content"
+msgstr "geen inhoud"
+
+#: templatetags/cms_admin.py:175 templatetags/cms_admin.py:181
+#, python-format
+msgid "<span>%(icon)s</span>"
+msgstr "<span>%(icon)s</span>"
+
+#: templatetags/cms_tags.py:102
 #, python-format
 msgid "Page not found on %(domain)s"
 msgstr "Pagina niet gevonden in %(domain)s"
 
-#: templatetags/cms_tags.py:100
+#: templatetags/cms_tags.py:103
 #, python-format
 msgid ""
 "A template tag couldn't find the page with lookup arguments `%(page_lookup)s\n"
 "`. The URL of the request was: http://%(host)s%(path)s"
 msgstr "Een template tag kan de pagina met opzoek argumenten `%(page_lookup)s\n` niet vinden. De URL van het verzoek was: http://%(host)s%(path)s"
 
-#: test_utils/cli.py:119 test_utils/cli.py:130
+#: test_utils/cli.py:133 test_utils/cli.py:144
 msgid "English"
 msgstr "Engels"
 
-#: test_utils/cli.py:120 test_utils/cli.py:142 test_utils/cli.py:165
+#: test_utils/cli.py:134 test_utils/cli.py:156 test_utils/cli.py:179
 msgid "French"
 msgstr "Frans"
 
-#: test_utils/cli.py:121 test_utils/cli.py:136 test_utils/cli.py:159
-#: test_utils/cli.py:178
+#: test_utils/cli.py:135 test_utils/cli.py:150 test_utils/cli.py:173
+#: test_utils/cli.py:192
 msgid "German"
 msgstr "Duits"
 
-#: test_utils/cli.py:122 test_utils/cli.py:147
+#: test_utils/cli.py:136 test_utils/cli.py:161
 msgid "Brazilian Portuguese"
 msgstr "Braziliaans Portugees"
 
-#: test_utils/cli.py:123 test_utils/cli.py:172
+#: test_utils/cli.py:137 test_utils/cli.py:186
 msgid "Dutch"
 msgstr "Nederlands"
 
-#: test_utils/cli.py:188
+#: test_utils/cli.py:202
 msgid "two columns"
 msgstr "twee kolommen"
 
-#: test_utils/cli.py:189
+#: test_utils/cli.py:203
 msgid "three columns"
 msgstr "drie kolommen"
 
-#: test_utils/cli.py:190
+#: test_utils/cli.py:204
 msgid "navigation examples"
 msgstr "navigatievoorbeelden"
 
-#: test_utils/cli.py:198
+#: test_utils/cli.py:212
 msgid "sidebar column"
-msgstr "background color"
+msgstr "zijbalk kolom"
 
-#: test_utils/cli.py:204
+#: test_utils/cli.py:217
 msgid "left column"
-msgstr "background color"
+msgstr "linker kolom"
 
-#: test_utils/cli.py:216
+#: test_utils/cli.py:222
+msgid "Add a link"
+msgstr "Voeg een link toe"
+
+#: test_utils/cli.py:228
 msgid "right column"
-msgstr "background color"
+msgstr "rechter kolom"
 
 #: test_utils/project/extensionapp/cms_toolbar.py:46
-msgid "Page Extension"
-msgstr ""
+msgid "Title Extension"
+msgstr "Titel extensie"
 
 #: test_utils/project/extensionapp/cms_toolbar.py:82
-msgid "Title Extension"
-msgstr ""
+msgid "Page Extension"
+msgstr "Pagina extensie"
 
-#: test_utils/project/objectpermissionsapp/models.py:47
+#: test_utils/project/objectpermissionsapp/models.py:46
 msgid "object ID"
-msgstr ""
+msgstr "object ID "
 
 #: test_utils/project/placeholderapp/cms_app.py:7
 msgid "Example1 App"
-msgstr ""
+msgstr "Voorbeeld1 App"
 
 #: test_utils/project/placeholderapp/cms_app.py:13
 msgid "MultilingualExample1 App"
-msgstr ""
-
-#: test_utils/project/placeholderapp/cms_plugins.py:7
-msgid "Test Plugin"
-msgstr "Testplugin"
+msgstr "MeertalenVoorbeeld1 App"
 
 #: test_utils/project/pluginapp/plugins/extra_context/cms_plugins.py:9
 msgid "Extra Context"
 msgstr "Extra context"
 
-#: test_utils/project/pluginapp/plugins/manytomany_rel/cms_plugins.py:13
+#: test_utils/project/pluginapp/plugins/manytomany_rel/cms_plugins.py:11
 msgid "Articles"
 msgstr "Artikelen"
 
@@ -1924,16 +1628,16 @@ msgstr "Voorbeeld app 2"
 msgid "Namespaced App"
 msgstr "Namespaced App"
 
-#: test_utils/project/sampleapp/cms_toolbar.py:17
+#: test_utils/project/sampleapp/cms_toolbar.py:21
 #: test_utils/project/sampleapp/views.py:21
 msgid "Category"
 msgstr "Categorie"
 
-#: test_utils/project/sampleapp/cms_toolbar.py:18
+#: test_utils/project/sampleapp/cms_toolbar.py:22
 msgid "Categories"
-msgstr "Categorien"
+msgstr "Categorieën"
 
-#: test_utils/project/sampleapp/cms_toolbar.py:19
+#: test_utils/project/sampleapp/cms_toolbar.py:23
 msgid "Add Category"
 msgstr "Categorie toevoegen"
 
@@ -1969,7 +1673,7 @@ msgstr "^account/$"
 msgid "Change Category"
 msgstr "Categorie wijzigen"
 
-#: utils/conf.py:78
+#: utils/conf.py:104
 msgid "Inherit the template of the nearest ancestor"
 msgstr "Erf het sjabloon van de bovenliggende pagina"
 
@@ -1981,11 +1685,11 @@ msgstr "CMS - je gebruikersaccount is aangemaakt."
 msgid "CMS - your user account was changed."
 msgstr "CMS - je gebruikersaccount is veranderd."
 
-#: utils/page_resolver.py:155
+#: utils/page_resolver.py:131
 msgid "Invalid URL, use /my/url format."
 msgstr "Ongeldige URL, gebruik het formaat /mijn/url."
 
-#: utils/page_resolver.py:187
+#: utils/page_resolver.py:159
 #, python-format
 msgid ""
 "Page %(pages)s has the same url '%(url)s' as current page \"%(instance)s\"."
@@ -1994,6 +1698,30 @@ msgid_plural ""
 "\"%(instance)s\"."
 msgstr[0] "Pagina %(pages)s heeft dezelfde url '%(url)s' als de huidige pagina \"%(instance)s\"."
 msgstr[1] "Pagina's %(pages)s hebben dezelfde url '%(url)s' als de huidige pagina \"%(instance)s\"."
+
+#: utils/plugins.py:370
+#, python-format
+msgid "This placeholder already has the maximum number of plugins (%s)."
+msgstr "Deze placeholder bevat al het maximale aantal plugins (%s)."
+
+#: utils/plugins.py:380
+#, python-format
+msgid ""
+"This placeholder already has the maximum number (%(limit)s) of allowed "
+"%(plugin_name)s plugins."
+msgstr "Deze placeholder bevat al het maximale aantal (%(limit)s) van toegestane %(plugin_name)s plugins."
+
+#~ msgid "Email"
+#~ msgstr "email address"
+
+#~ msgid "last name"
+#~ msgstr "publish request"
+
+#~ msgid "Use latitude & longitude to fine tune the map position."
+#~ msgstr "Use latitude & longitude to fine tune the map position."
+
+#~ msgid "An email adress has priority over a text link."
+#~ msgstr "An email address has priority over a text link."
 
 #~ msgid ""
 #~ "Page <a href=\"%(admin_url)s\">%(page)s</a> may require approvement by you."

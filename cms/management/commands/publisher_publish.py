@@ -11,15 +11,15 @@ class Command(NoArgsCommand):
         self.publish_pages()
         
     def publish_pages(self):
-        from django.contrib.auth.models import User
         from cms.models import Page
+        from cms.utils.compat.dj import get_user_model
         from cms.utils.permissions import set_current_user
         
         # thread locals middleware needs to know, who are we - login as a first
         # super user
         
         try:
-            user = User.objects.filter(is_active=True, is_staff=True, is_superuser=True)[0]
+            user = get_user_model().objects.filter(is_active=True, is_staff=True, is_superuser=True)[0]
         except IndexError:
             raise CommandError("No super user found, create one using `manage.py createsuperuser`.")
         

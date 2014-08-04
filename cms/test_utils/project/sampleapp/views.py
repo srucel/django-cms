@@ -20,7 +20,7 @@ def category_view(request, id):
     if request.user.is_staff:
         category_menu = request.toolbar.get_or_create_menu('category', _('Category'))
         change_url = reverse('admin:sampleapp_category_change', args=(cat.pk,))
-        category_menu.add_modal_item(_("Change Category"), url=change_url, close_on_url_change=True)
+        category_menu.add_modal_item(_("Change Category"), url=change_url)
     return render_to_response('sampleapp/category_view.html',
                               RequestContext(request, {'category': cat}))
 
@@ -37,6 +37,10 @@ def current_app(request):
     app = resolve(request.path).namespace
     context = RequestContext(request, {'app': app}, current_app=app)
     return render_to_response("sampleapp/app.html", context)
+
+def plain_view(request):
+    context = RequestContext(request, {'content': 'plain text'})
+    return render_to_response("sampleapp/plain.html", context)
 
 
 def notfound(request):

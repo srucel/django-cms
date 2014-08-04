@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from cms.plugin_pool import plugin_pool
+from django.core.management.base import LabelCommand
+
 from cms.management.commands.subcommands.base import SubcommandsCommand
 from cms.models import Page
 from cms.models.pluginmodel import CMSPlugin
-from django.core.management.base import LabelCommand
 from cms.utils.compat.input import raw_input
 
 
@@ -36,6 +38,7 @@ class UninstallPluginsCommand(LabelCommand):
     help = 'Uninstalls (deletes) specified plugins from the CMSPlugin model'
 
     def handle_label(self, label, **options):
+        plugin_pool.get_all_plugins()
         queryset = CMSPlugin.objects.filter(plugin_type=label)
         number_of_plugins = queryset.count()
 
@@ -47,8 +50,11 @@ Are you sure you want to do this?
 Type 'yes' to continue, or 'no' to cancel: """ % (number_of_plugins, label))
             else:
                 confirm = 'yes'
-            queryset.delete()
-            self.stdout.write(u'%d %r plugins uninstalled\n' % (number_of_plugins, label))
+            if confirm == 'yes':
+                queryset.delete()
+                self.stdout.write(u'%d %r plugins uninstalled\n' % (number_of_plugins, label))
+            else:
+                self.stdout.write(u'Aborted')
         else:
             self.stdout.write(u'no %r plugins found\n' % label)
 

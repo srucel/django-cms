@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from cms.utils.compat.dj import force_unicode
 from django.db.models.query_utils import Q
+from sekizai.helpers import get_varname
 
 
 def get_toolbar_plugin_struct(plugins_list, slot, page, parent=None):
@@ -27,13 +28,15 @@ def get_toolbar_plugin_struct(plugins_list, slot, page, parent=None):
         template = page.template
     main_list = []
     for plugin in plugins_list:
+        allowed_parents = plugin().get_parent_classes(slot, page)
         if parent:
-            allowed_parents = plugin().get_parent_classes(slot, page)
             ## skip to the next if this plugin is not allowed to be a child
             ## of the parent
             if allowed_parents and parent.__name__ not in allowed_parents:
                 continue
-
+        else:
+            if allowed_parents:
+                continue
         modules = get_placeholder_conf("plugin_modules", slot, template, default={})
         names = get_placeholder_conf("plugin_labels", slot, template, default={})
         main_list.append({'value': plugin.value,
@@ -64,6 +67,15 @@ def get_placeholder_conf(setting, placeholder, template=None, default=None):
             value = conf.get(setting)
             if value is not None:
                 return value
+            inherit = conf.get('inherit')
+            if inherit :
+                if ' ' in inherit:
+                    inherit = inherit.split(' ')
+                else:
+                    inherit = (None, inherit,)
+                value = get_placeholder_conf(setting, inherit[1], inherit[0], default)
+                if value is not None:
+                    return value
     return default
 
 
@@ -125,3 +137,12 @@ class MLNGPlaceholderActions(PlaceholderNoAction):
 
         language_codes = manager.filter(query).values_list('language_code', flat=True).distinct()
         return [(lc, dict(settings.LANGUAGES)[lc]) for lc in language_codes]
+
+
+def restore_sekizai_context(context, changes):
+    varname = get_varname()
+    sekizai_container = context.get(varname)
+    for key, values in changes.items():
+        sekizai_namespace = sekizai_container[key]
+        for value in values:
+            sekizai_namespace.append(value)

@@ -17,6 +17,7 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 2.6",
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3.3",
+    "Programming Language :: Python :: 3.4",
 ]
 
 setup(
@@ -32,10 +33,10 @@ setup(
     classifiers=CLASSIFIERS,
     install_requires=[
         'Django>=1.4',
-        'django-classy-tags>=0.3.4.1',
+        'django-classy-tags>=0.5',
         'south>=0.7.2',
         'html5lib',
-        'django-mptt==0.5.2,==0.6',
+        'django-mptt==0.5.2,==0.6,==0.6.1',
         'django-sekizai>=0.7',
         'djangocms-admin-style'
     ],
@@ -47,7 +48,7 @@ setup(
         'Pygments==1.5',
         'dj-database-url==0.2.1',
         'django-hvad',
-        'djangocms-text-ckeditor',
+        'djangocms-text-ckeditor>=2.1.1',
         'djangocms-column',
         'djangocms-style',
     ],

@@ -1,18 +1,6 @@
 # -*- coding: utf-8 -*-
-import sys
-from cms.apphook_pool import apphook_pool
-from cms.forms.widgets import UserSelectAdminWidget
-from cms.models import Page, PagePermission, PageUser, ACCESS_PAGE, PageUserGroup, titlemodels, Title
-from cms.utils.conf import get_cms_setting
-from cms.utils.i18n import get_language_tuple, get_language_list
-from cms.utils.mail import mail_page_user_change
-from cms.utils.page import is_valid_page_slug
-from cms.utils.page_resolver import is_valid_url
-from cms.utils.permissions import get_current_user, get_subordinate_users, get_subordinate_groups, \
-    get_user_permission_level
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Permission, User
+from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
@@ -21,10 +9,27 @@ from django.forms.util import ErrorList
 from django.forms.widgets import HiddenInput
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _, get_language
+
+from cms.apphook_pool import apphook_pool
+from cms.constants import PAGE_TYPES_ID
+from cms.forms.widgets import UserSelectAdminWidget, AppHookSelect
+from cms.models import Page, PagePermission, PageUser, ACCESS_PAGE, PageUserGroup, Title, EmptyTitle
+from cms.utils.compat.dj import get_user_model, force_unicode
+from cms.utils.compat.forms import UserCreationForm
+from cms.utils.conf import get_cms_setting
+from cms.utils.i18n import get_language_tuple, get_language_list
+from cms.utils.mail import mail_page_user_change
+from cms.utils.page import is_valid_page_slug
+from cms.utils.page_resolver import is_valid_url
+from cms.utils.permissions import (get_current_user, get_subordinate_users,
+                                   get_subordinate_groups,
+                                   get_user_permission_level)
 from menus.menu_pool import menu_pool
 
 
 def get_permission_acessor(obj):
+    User = get_user_model()
+    
     if isinstance(obj, (PageUser, User,)):
         rel_name = 'user_permissions'
     else:
@@ -56,6 +61,9 @@ def save_permissions(data, obj):
 
 
 class PageForm(forms.ModelForm):
+    language = forms.ChoiceField(label=_("Language"), choices=get_language_tuple(),
+                                 help_text=_('The current language of the content fields.'))
+    page_type = forms.ChoiceField(label=_("Page type"), required=False)
     title = forms.CharField(label=_("Title"), widget=forms.TextInput(),
                             help_text=_('The default title'))
     slug = forms.CharField(label=_("Slug"), widget=forms.TextInput(),
@@ -65,13 +73,10 @@ class PageForm(forms.ModelForm):
     page_title = forms.CharField(label=_("Page Title"), widget=forms.TextInput(),
                                  help_text=_('Overwrites what is displayed at the top of your browser or in bookmarks'),
                                  required=False)
-    meta_description = forms.CharField(label='Description meta tag', required=False,
+    meta_description = forms.CharField(label=_('Description meta tag'), required=False,
                                        widget=forms.Textarea(attrs={'maxlength': '155', 'rows': '4'}),
                                        help_text=_('A description of the page used by search engines.'),
                                        max_length=155)
-    language = forms.ChoiceField(label=_("Language"), choices=get_language_tuple(),
-                                 help_text=_('The current language of the content fields.'))
-
 
     class Meta:
         model = Page
@@ -90,11 +95,24 @@ class PageForm(forms.ModelForm):
         self.fields['language'].choices = languages
         if not self.fields['language'].initial:
             self.fields['language'].initial = get_language()
+        if 'page_type' in self.fields:
+            try:
+                type_root = Page.objects.get(publisher_is_draft=True, reverse_id=PAGE_TYPES_ID, site=site_id)
+            except Page.DoesNotExist:
+                type_root = None
+            if type_root:
+                language = self.fields['language'].initial
+                type_ids = type_root.get_descendants().values_list('pk', flat=True)
+                titles = Title.objects.filter(page__in=type_ids, language=language)
+                choices = [('', '----')]
+                for title in titles:
+                    choices.append((title.page_id, title.title))
+                self.fields['page_type'].choices = choices
 
     def clean(self):
         cleaned_data = self.cleaned_data
         slug = cleaned_data.get('slug', '')
-
+        
         page = self.instance
         lang = cleaned_data.get('language', None)
         # No language, can not go further, but validation failed already
@@ -120,29 +138,29 @@ class PageForm(forms.ModelForm):
             #Check for titles attached to the page makes sense only because
             #AdminFormsTests.test_clean_overwrite_url validates the form with when no page instance available
             #Looks like just a theoretical corner case
-            try:
-                title = page.get_title_obj(lang, fallback=False)
-            except titlemodels.Title.DoesNotExist:
-                title = None
-            if title and not isinstance(title, titlemodels.EmptyTitle) and slug:
+            title = page.get_title_obj(lang, fallback=False)
+            if title and not isinstance(title, EmptyTitle) and slug:
                 oldslug = title.slug
                 title.slug = slug
                 title.save()
                 try:
                     is_valid_url(title.path, page)
-                except ValidationError:
-                    exc = sys.exc_info()[0]
+                except ValidationError as exc:
                     title.slug = oldslug
                     title.save()
                     if 'slug' in cleaned_data:
                         del cleaned_data['slug']
-                    self._errors['slug'] = ErrorList(exc.messages)
+                    if hasattr(exc, 'messages'):
+                        errors = exc.messages
+                    else:
+                        errors = [force_unicode(exc.message)]
+                    self._errors['slug'] = ErrorList(errors)
         return cleaned_data
 
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])
         if not slug:
-            raise ValidationError("Slug must not be empty.")
+            raise ValidationError(_("Slug must not be empty."))
         return slug
 
     def clean_language(self):
@@ -175,16 +193,38 @@ class PublicationDatesForm(forms.ModelForm):
 
 
 class AdvancedSettingsForm(forms.ModelForm):
+    from cms.forms.fields import PageSmartLinkField
     application_urls = forms.ChoiceField(label=_('Application'),
                                          choices=(), required=False,
                                          help_text=_('Hook application to this page.'))
     overwrite_url = forms.CharField(label=_('Overwrite URL'), max_length=255, required=False,
                                     help_text=_('Keep this field empty if standard path should be used.'))
 
-    redirect = forms.CharField(label=_('Redirect'), max_length=255, required=False,
-                               help_text=_('Redirects to this URL.'))
+    xframe_options = forms.ChoiceField(
+        choices=Page._meta.get_field('xframe_options').choices,
+        label=_('X Frame Options'),
+        help_text=_('Whether this page can be embedded in other pages or websites'),
+        initial=Page._meta.get_field('xframe_options').default,
+        required=False
+    )
+
+    redirect = PageSmartLinkField(label=_('Redirect'), required=False,
+                    help_text=_('Redirects to this URL.'), placeholder_text=_('Start typing...'),
+                    ajax_view='admin:cms_page_get_published_pagelist'
+    )
+
     language = forms.ChoiceField(label=_("Language"), choices=get_language_tuple(),
                                  help_text=_('The current language of the content fields.'))
+
+    fieldsets = (
+        (None, {
+            'fields': ('overwrite_url','redirect'),
+        }),
+        ('Language independent options', {
+            'fields': ('site', 'template', 'reverse_id', 'soft_root', 'navigation_extenders',
+            'application_urls', 'application_namespace', "xframe_options",)
+        })
+    )
 
     def __init__(self, *args, **kwargs):
         super(AdvancedSettingsForm, self).__init__(*args, **kwargs)
@@ -200,7 +240,22 @@ class AdvancedSettingsForm(forms.ModelForm):
             self.fields['navigation_extenders'].widget = forms.Select({},
                 [('', "---------")] + menu_pool.get_menus_by_attribute("cms_enabled", True))
         if 'application_urls' in self.fields:
+            # Prepare a dict mapping the apps by class name ('PollApp') to
+            # their app_name attribute ('polls'), if any.
+            app_namespaces = {}
+            for hook in apphook_pool.get_apphooks():
+                app = apphook_pool.get_apphook(hook[0])
+                if app.app_name:
+                    app_namespaces[hook[0]] = app.app_name
+
+            self.fields['application_urls'].widget = AppHookSelect(
+                attrs={'id':'application_urls'},
+                app_namespaces=app_namespaces,
+            )
             self.fields['application_urls'].choices = [('', "---------")] + apphook_pool.get_apphooks()
+
+        if 'redirect' in self.fields:
+            self.fields['redirect'].widget.language = self.fields['language'].initial
 
     def clean(self):
         cleaned_data = super(AdvancedSettingsForm, self).clean()
@@ -212,17 +267,55 @@ class AdvancedSettingsForm(forms.ModelForm):
                         pk=self.instance.pk).count():
                     self._errors['reverse_id'] = self.error_class(
                         [_('A page with this reverse URL id exists already.')])
-        apphook = cleaned_data['application_urls']
-        namespace = cleaned_data['application_namespace']
+        apphook = cleaned_data.get('application_urls', None)
+        # The field 'application_namespace' is a misnomer. It should be
+        # 'instance_namespace'.
+        instance_namespace = cleaned_data.get('application_namespace', None)
         if apphook:
-            apphook_pool.discover_apps()
-            if apphook_pool.apps[apphook].app_name and not namespace:
-                self._errors['application_urls'] = ErrorList(
-                    [_('You selected an apphook with an "app_name". You must enter a namespace.')])
-        if namespace and not apphook:
-            self._errors['application_namespace'] = ErrorList(
-                [_("If you enter a namespace you need an application url as well.")])
+            # The attribute on the apps 'app_name' is a misnomer, it should be
+            # 'application_namespace'.
+            application_namespace = apphook_pool.get_apphook(apphook).app_name
+            if application_namespace and not instance_namespace:
+                if Page.objects.filter(
+                    publisher_is_draft=True,
+                    application_urls=apphook,
+                    application_namespace=application_namespace
+                ).exclude(pk=self.instance.pk).count():
+                    # Looks like there's already one with the default instance
+                    # namespace defined.
+                    self._errors['application_urls'] = ErrorList([
+                        _('''You selected an apphook with an "app_name".
+                            You must enter a unique instance name.''')
+                    ])
+                else:
+                    # OK, there are zero instances of THIS app that use the
+                    # default instance namespace, so, since the user didn't
+                    # provide one, we'll use the default. NOTE: The following
+                    # line is really setting the "instance namespace" of the
+                    # new app to the app’s "application namespace", which is
+                    # the default instance namespace.
+                    self.cleaned_data['application_namespace'] = application_namespace
+
+        if instance_namespace and not apphook:
+            self.cleaned_data['application_namespace'] = None
+
         return cleaned_data
+
+    def clean_application_namespace(self):
+        namespace = self.cleaned_data['application_namespace']
+        if namespace and Page.objects.filter(publisher_is_draft=True, application_namespace=namespace).exclude(pk=self.instance.pk).count():
+            raise ValidationError(_('A instance name with this name already exists.'))
+        return namespace
+
+    def clean_xframe_options(self):
+        if 'xframe_options' not in self.fields:
+            return # nothing to do, field isn't present
+
+        xframe_options = self.cleaned_data['xframe_options']
+        if xframe_options == '':
+            return Page._meta.get_field('xframe_options').default
+
+        return xframe_options
 
     def clean_overwrite_url(self):
         if 'overwrite_url' in self.fields:
@@ -234,7 +327,7 @@ class AdvancedSettingsForm(forms.ModelForm):
         model = Page
         fields = [
             'site', 'template', 'reverse_id', 'overwrite_url', 'redirect', 'soft_root', 'navigation_extenders',
-            'application_urls', 'application_namespace'
+            'application_urls', 'application_namespace', "xframe_options",
         ]
 
 
@@ -428,6 +521,12 @@ class PageUserForm(UserCreationForm, GenericCmsPermissionForm):
         if self.instance:
             return self.cleaned_data['username']
         return super(PageUserForm, self).clean_username()
+
+    # required if the User model's USERNAME_FIELD is the email field
+    def clean_email(self):
+        if self.instance:
+            return self.cleaned_data['email']
+        return super(PageUserForm, self).clean_email()
 
     def clean_password2(self):
         if self.instance and self.cleaned_data['password1'] == '' and self.cleaned_data['password2'] == '':

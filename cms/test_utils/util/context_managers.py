@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 from contextlib import contextmanager
+from shutil import rmtree as _rmtree
+from tempfile import template, mkdtemp
+import sys
+
 from django.conf import settings
 from django.core.signals import request_started
 from django.db import reset_queries
 from django.template import context
 from django.utils.translation import get_language, activate
-from shutil import rmtree as _rmtree
-from tempfile import template, mkdtemp
-import sys
+
 from cms.utils.compat.string_io import StringIO
+from cms.utils.compat.dj import get_user_model
 
 
 class NULL:
@@ -125,8 +128,8 @@ class UserLoginContext(object):
         self.user = user
         
     def __enter__(self):
-        loginok = self.testcase.client.login(username=self.user.username, 
-                                             password=self.user.username)
+        loginok = self.testcase.client.login(username=getattr(self.user, get_user_model().USERNAME_FIELD), 
+                                             password=getattr(self.user, get_user_model().USERNAME_FIELD))
         self.old_user = getattr(self.testcase, 'user', None)
         self.testcase.user = self.user
         self.testcase.assertTrue(loginok)

@@ -63,9 +63,11 @@ pages have plugins that generate content::
 See also the :setting:`CMS_PLACEHOLDER_CONF` setting where you can also add extra
 context variables and change some other placeholder behavior.
 
+.. templatetag:: static_placeholder
 
 static_placeholder
 ==================
+.. versionadded:: 3.0
 
 The static_placeholder templatetag can be used anywhere in any template and is not bound to any page or model.
 It needs a name and it will create a placeholder that you can fill with plugins afterwards.
@@ -97,6 +99,17 @@ Example::
 
 
 
+
+
+
+If you want to make your static placeholder site specific (``django.contrib.sites``) you can add
+``site`` to the templatetag to achieve this.
+
+Example::
+
+    {% static_placeholder "footer" site or %}There is no content.{% endstatic_placeholder %}
+
+
 .. templatetag:: show_placeholder
 
 render_placeholder
@@ -122,6 +135,14 @@ only the english plugins:
 
     {% render_placeholder mymodel_instance.my_placeholder language 'en' %}
 
+.. versionadded:: 3.0.2
+    This template tag supports the ``as`` argument. With this you can assign the result
+    of the template tag to a new variable that you can use elsewhere in the template.
+
+    Example::
+
+        {% render_placeholder mymodel_instance.my_placeholder as placeholder_content %}
+        <p>{{ placeholder_content }}</p>
 
 
 show_placeholder
@@ -214,6 +235,9 @@ Displays the URL of a page in the current language.
 Arguments:
 
 - ``page_lookup`` (see `page_lookup`_ for more information)
+- ``as var_name`` (version 3.0 or later, optional; page_url can now be used to assign the resulting
+  URL to a context variable ``var_name``)
+
 
 Example::
 
@@ -226,6 +250,21 @@ exception will not be raised. Additionally, if
 :setting:`django:SEND_BROKEN_LINK_EMAILS` is ``True`` and you have specified
 some addresses in :setting:`django:MANAGERS`, an email will be sent to those
 addresses to inform them of the broken link.
+
+.. versionadded:: 3.0
+    page_url now supports the ``as`` argument. When used this way, the tag
+    emits nothing, but sets a variable in the context with the specified name
+    to the resulting value.
+
+    When using the ``as`` argument PageNotFound exceptions are always
+    suppressed, regardless of the setting of :setting:`django:DEBUG` and the
+    tag will simply emit an empty string in these cases.
+
+Example::
+
+    {# Emit a 'canonical' tag when the page is displayed on an alternate url #}
+    {% page_url request.current_page as current_url %}{% if current_url and current_url != request.get_full_path %}<link rel="canonical" href="{% page_url request.current_page %}">{% endif %}
+
 
 .. templatetag:: page_attribute
 
@@ -309,16 +348,22 @@ Plugins need the ``allow_children`` attribute to set to `True` for this to be en
 render_model
 ============
 
-``render_model`` works by showing the content of the given attribute in
-the model instance and eventually makes it clickable to edit the related model.
+.. warning::
+
+    ``render_model`` marks as safe the content of the rendered model
+    attribute. This may be a security risk if used on fields which may contains
+    non-trusted content. Be aware, and use the templatetag accordingly.
+
+``render_model`` is the way to add frontend editing to any Django model.
+It both render the content of the given attribute of the model instance and
+makes it clickable to edit the related model.
 
 If the toolbar is not enabled, the value of the attribute is rendered in the
 template without further action.
 
-If the toolbar is enabled, frontend code is added to make the attribute value
-clickable.
+If the toolbar is enabled, click to call frontend editing code is added.
 
-Using this templatetag you can show and edit page titles as well as fields in
+By using this templatetag you can show and edit page titles as well as fields in
 standard django models, see :ref:`frontend-editable-fields` for examples and
 further documentation.
 
@@ -326,7 +371,7 @@ Example:
 
 .. code-block:: html+django
 
-    <h1>{% render_model_block my_model "title" "title,abstract" %}</h1>
+    <h1>{% render_model my_model "title" "title,abstract" %}</h1>
 
 This will render to:
 
@@ -340,9 +385,14 @@ This will render to:
 * ``instance``: instance of your model in the template
 * ``attribute``: the name of the attribute you want to show in the template; it
   can be a context variable name; it's possible to target field, property or
-  callable for the specified model;
+  callable for the specified model; when used on a page object this argument
+  accepts the special ``titles`` value which will show the page **title**
+  field, while allowing editing **title**, **menu title** and **page title**
+  fields in the same form;
 * ``edit_fields`` (optional): a comma separated list of fields editable in the
-  popup editor;
+  popup editor; when templatetag is used on a page object this argument
+  accepts the special ``changelist`` value which allows editing the pages
+  **changelist** (items list);
 * ``language`` (optional): the admin language tab to be linked. Useful only for
   `django-hvad`_ enabled models.
 * ``filters`` (optional): a string containing chained filters to apply to the
@@ -354,11 +404,14 @@ This will render to:
 * ``varname`` (optional): the templatetag output can be saved as a context
   variable for later use.
 
+
 .. warning::
 
-    ``render_model`` marks as safe the content of the rendered model
-    attribute. This may be a security risk if used on fields which may hold
-    non-trusted content. Be aware, and use the templatetag accordingly.
+    ``render_model`` is only partially compatible with django-hvad: using
+    it with hvad-translated fields
+    (say {% render_model object 'translated_field' %} return error if the
+    hvad-enabled object does not exists in the current language.
+    As a workaround ``render_model_icon`` can be used instead.
 
 
 .. templatetag:: render_model_block
@@ -399,7 +452,9 @@ method is available; also templatetags and filters are available in the block.
 
 * ``instance``: instance of your model in the template
 * ``edit_fields`` (optional): a comma separated list of fields editable in the
-  popup editor;
+  popup editor; when templatetag is used on a page object this argument
+  accepts the special ``changelist`` value which allows editing the pages
+  **changelist** (items list);
 * ``language`` (optional): the admin language tab to be linked. Useful only for
   `django-hvad`_ enabled models.
 * ``view_url`` (optional): the name of a url that will be reversed using the
@@ -448,7 +503,9 @@ It will render to something like:
 
 * ``instance``: instance of your model in the template
 * ``edit_fields`` (optional): a comma separated list of fields editable in the
-  popup editor;
+  popup editor; when templatetag is used on a page object this argument
+  accepts the special ``changelist`` value which allows editing the pages
+  **changelist** (items list);
 * ``language`` (optional): the admin language tab to be linked. Useful only for
   `django-hvad`_ enabled models.
 * ``view_url`` (optional): the name of a url that will be reversed using the
@@ -531,7 +588,7 @@ show_menu
 =========
 
 The ``show_menu`` tag renders the navigation of the current page. You can
-overwrite the appearance and the HTML if you add a ``cms/menu.html`` template
+overwrite the appearance and the HTML if you add a ``menu/menu.html`` template
 to your project or edit the one provided with django CMS. ``show_menu`` takes
 four optional parameters: ``start_level``, ``end_level``, ``extra_inactive``,
 and ``extra_active``.
